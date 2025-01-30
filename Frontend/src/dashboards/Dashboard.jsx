@@ -177,11 +177,11 @@ const Dashboard = () => {
       {features.map((feature, index) => (
         <div 
           key={index}
-          className="flex-none w-72 p-6 rounded-3xl transition-all duration-300 bg-slate-600 hover:bg-slate-800 group  hover:scale-110"
+          className="flex-none w-72 p-6 rounded-3xl transition-all duration-300 bg-slate-600 hover:bg-slate-800 group  hover:scale-90 cursor-pointer"
         >
           <div className="flex flex-col items-start gap-4 ">
-            <div className="p-2 bg-slate-700/50 rounded-xl">
-              <feature.icon className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors" />
+            <div className="p-2 bg-slate-700/50 rounded-xl ">
+              <feature.icon className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors " />
             </div>
             
             <div>
