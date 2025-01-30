@@ -1,5 +1,5 @@
 const express = require("express");
-const authenticate = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
 const MentorSlot = require("../models/MentorSlot");
 const User = require("../models/User");
 
@@ -33,7 +33,7 @@ router.get("/details", async (req, res) => {
 });
 
 // ✅ Create Available Slots (Prevent Duplicates & Allow Multiple Slots)
-router.post("/create-slot", authenticate, async (req, res) => {
+router.post("/create-slot", authMiddleware, async (req, res) => {
 
     if (req.user.role !== "mentor") {
       return res.status(403).json({ error: "Access Denied" });
@@ -99,7 +99,7 @@ router.get("/available-slots", async (req, res) => {
 });
 
   // ✅ Mentor Deletes a Slot
-router.delete("/delete-slot", authenticate, async (req, res) => {
+router.delete("/delete-slot", authMiddleware, async (req, res) => {
     if (req.user.role !== "mentor") {
       return res.status(403).json({ error: "Access Denied" });
     }
@@ -120,7 +120,7 @@ router.delete("/delete-slot", authenticate, async (req, res) => {
   });
 
   // Update Mentor Details
-router.put("/update", authenticate, async (req, res) => {
+router.put("/update", authMiddleware, async (req, res) => {
   const { mentorId } = req.query;
   const { prefix, name, surname, expertise, experience } = req.body;
 
@@ -165,7 +165,7 @@ router.put("/update", authenticate, async (req, res) => {
   };
 
 // ✅ Get Mentor's Slots (For Mentor Dashboard)
-router.get("/slots", authenticate, async (req, res) => {
+router.get("/slots", authMiddleware, async (req, res) => {
   try {
     const slots = await MentorSlot.find({ mentorId: req.user._id });
     res.json(slots);
@@ -175,7 +175,7 @@ router.get("/slots", authenticate, async (req, res) => {
 });
 
 //fetch mentee bookings
-router.get("/bookings", authenticate, async (req, res) => {
+router.get("/bookings", authMiddleware, async (req, res) => {
   try {
     // Ensure req.user is defined
     if (!req.user || req.user.role !== "mentor") {

@@ -1,10 +1,10 @@
 // In your backend routes (e.g., userRoutes.js)
 const express = require("express");
 const User = require("../models/User");
-const authenticate = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
 
-router.get('/users', authenticate, async (req, res) => {
+router.get('/users', authMiddleware, async (req, res) => {
     const { email } = req.query; // Get email from query params
     
     if (!email) {

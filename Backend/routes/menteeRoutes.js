@@ -1,11 +1,11 @@
 const express = require("express");
-const authenticate = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
 const MentorSlot = require("../models/MentorSlot");
 const mongoose = require("mongoose");
 const router = express.Router();
 
 // ✅ Mentee Books a Slot
-router.post("/book-slot", authenticate, async (req, res) => {
+router.post("/book-slot", authMiddleware, async (req, res) => {
   if (req.user.role !== "mentee") {
     return res.status(403).json({ error: "Access Denied" });
   }
@@ -58,7 +58,7 @@ router.post("/book-slot", authenticate, async (req, res) => {
 
 
 //view bookings
-router.get("/bookings", authenticate, async (req, res) => {
+router.get("/bookings", authMiddleware, async (req, res) => {
   try {
     // Ensure req.user is defined
     if (!req.user || req.user.role !== "mentee") {

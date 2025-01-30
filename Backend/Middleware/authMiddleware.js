@@ -2,10 +2,10 @@ const admin = require("../config/firebase");
 const User = require("../models/User");
 
 
-// Middleware to authenticate user using Firebase ID token
+// Middleware to authMiddleware user using Firebase ID token
 
 
-const authenticate = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   console.log("Token:", token);
@@ -24,4 +24,4 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-module.exports = authenticate;
+module.exports = authMiddleware;
