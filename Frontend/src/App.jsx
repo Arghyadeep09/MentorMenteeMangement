@@ -1,14 +1,16 @@
+import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Signup from "./components/Signup";
-import Login from "./components/Login";
+const Signup = React.lazy(() => import("./components/Signup"));
+const Login = React.lazy(() => import("./components/Login"));
 import { AuthProvider } from "./context/AuthContext"; // Corrected the import path
-import Dashboard from "./dashboards/dashboard";
-import MenteeDashboard from "./dashboards/MenteeDashboard";
-import MentorDashboard from "./dashboards/MentorDashboard";
+const Dashboard = React.lazy(() => import("./dashboards/dashboard"));
+const MenteeDashboard = React.lazy(() => import("./dashboards/MenteeDashboard"));
+const MentorDashboard = React.lazy(() => import("./dashboards/MentorDashboard"));
 function App() {
   return (
     <AuthProvider> {/* FIXED: Changed AuthContext to AuthProvider */}
       <Router>
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/signup" element={<Signup />} />
@@ -17,6 +19,7 @@ function App() {
            <Route path="/mentor-dashboard" element={<MentorDashboard />} />
            
         </Routes>
+        </Suspense>
       </Router>
     </AuthProvider>
   );
