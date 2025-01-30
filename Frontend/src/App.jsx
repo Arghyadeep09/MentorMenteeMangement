@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 const Signup = React.lazy(() => import("./components/Signup"));
 const Login = React.lazy(() => import("./components/Login"));
 import { AuthProvider } from "./context/AuthContext"; // Corrected the import path
-const Dashboard = React.lazy(() => import("./dashboards/dashboard"));
+const Dashboard = React.lazy(() => import("./dashboards/Dashboard"));
 const MenteeDashboard = React.lazy(() => import("./dashboards/MenteeDashboard"));
 const MentorDashboard = React.lazy(() => import("./dashboards/MentorDashboard"));
 function App() {
