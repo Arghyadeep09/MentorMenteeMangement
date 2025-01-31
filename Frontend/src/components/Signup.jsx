@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';   
+import { BiShow, BiHide } from "react-icons/bi";
 const Signup = () => {
   const [prefix, setPrefix] = useState("");
   const [name, setName] = useState("");
@@ -18,9 +19,11 @@ const Signup = () => {
   const [experience, setExperience] = useState(""); // New state for Mentor's Experience
   const [error, setError] = useState(""); 
   const [loading, setLoading] = useState(false); 
-   const [passwordVisible, setPasswordVisible] = useState(false); // New state
+const [isPasswordVisible, setIsPasswordVisible] = useState(false); // New state
   const navigate = useNavigate(); 
-  const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
+ const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
    const validateForm = () => {
     let isValid = true;
     const nameRegex = /^[A-Za-z]+$/; // Regular expression to allow only letters
@@ -30,7 +33,11 @@ const Signup = () => {
     } else if (!nameRegex.test(name)) {
       toast.error("First Name must contain only letters.");
       isValid = false;
-    }
+     }
+      if (experience < 0) {
+    toast.error("Experience cannot be negative.");
+    isValid = false;
+  }
     if (!surname.trim()) {
       toast.error("Last Name is required.");
       isValid = false;
@@ -121,16 +128,17 @@ const Signup = () => {
         <h2 className="text-4xl font-bold text-blue-500 text-center">
           Create Account
         </h2>
-        <p className="text-gray-500 font-semibold text-center mb-6">
+        <p className="text-gray-500 font-semibold text-center mb-4">
           Join us and start your journey
         </p>
 
         <form onSubmit={handleSignup} className="space-y-4">
-          {/* Name Inputs */}
+          {/* Name Inputs */} 
+           <div className="row flex gap-4">
           <select
             value={prefix}
             onChange={(e) => setPrefix(e.target.value)}
-            className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-400 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
+            className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-400 placeholder-gray-600 focus:outline-none cursor-pointer font-semibold"
           >
             <option value="" disabled className="text-gray-200">
               Select Prefix
@@ -142,21 +150,34 @@ const Signup = () => {
             <option value="Prof.">Prof.</option>
             
             {/* Add more options as needed */}
-          </select>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
-          />
-          <input
-            type="text"
-            placeholder="Surname"
-            value={surname}
-            onChange={(e) => setSurname(e.target.value)}
-            className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
-          />
+          </select> 
+           {/* Role Selection */}
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-500 placeholder-gray-300 focus:outline-none cursor-pointer"
+          >
+            <option value="mentee">Mentee</option>
+            <option value="mentor">Mentor</option>
+            </select>
+            </div>
+         <div className="row flex gap-4">
+  <input
+    type="text"
+    placeholder="First Name"
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+    className="w-full md:w-1/2 px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none font-semibold"
+  />
+  <input
+    type="text"
+    placeholder="Surname"
+    value={surname}
+    onChange={(e) => setSurname(e.target.value)}
+    className="w-full md:w-1/2 px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none font-semibold"
+  />
+</div>
+
 
           {/* Email & Password */}
           <input
@@ -166,41 +187,44 @@ const Signup = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
-          />
+          <div className="relative">
+                      <input
+                        type={isPasswordVisible ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute right-3 top-4 text-gray-600 cursor-pointer hover:text-gray-800"
+                      >
+                        {isPasswordVisible ? <BiShow /> : <BiHide />}
+                      </button>
+                    </div>
 
-          {/* Role Selection */}
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-500 placeholder-gray-300 focus:outline-none cursor-pointer"
-          >
-            <option value="mentee">Mentee</option>
-            <option value="mentor">Mentor</option>
-          </select>
+         
 
           {/* Mentor's Additional Fields (Expertise & Experience) */}
           {role === "mentor" && (
-            <>
+            <> 
+              <div className="row flex gap-4">
               <input
                 type="text"
-                placeholder="Your Expertise (e.g., React, Node.js)"
+                placeholder="Your Expertise "
                 value={expertise}
                 onChange={(e) => setExpertise(e.target.value)}
                 className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
               />
               <input
                 type="number"
-                placeholder="Years of Experience"
+                placeholder=" Experience"
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
                 className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
-              />
+                /> 
+                </div>
             </>
           )}
 
