@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';         
 import { auth } from "../firebaseConfig";
 import axios from "axios";
 import { BiShow, BiHide } from "react-icons/bi";
@@ -7,6 +9,7 @@ import { UserAuth } from "../context/AuthContext";
 import { GoogleButton } from "react-google-button";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
+
 import "boxicons";
 
 const Login = () => {
@@ -27,10 +30,27 @@ const Login = () => {
       setPassword(savedPassword);
       setRememberMe(true);
     }
-  }, []);
+  }, []); 
+  const validateForm = () => {
+    if (!email || !password) {
+      toast.error("Both email and password are required.");
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      toast.error("Please enter a valid email address.");
+      return false;
+    }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return false;
+    }
+    return true;
+  };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
+     if (!validateForm()) return;
     setError("");
     setLoading(true);
     
@@ -66,15 +86,19 @@ const Login = () => {
           localStorage.removeItem("password");
         }
         if (user?.role === "mentor") {
-          navigate("/mentor-dashboard");
+          navigate("/mentor-dashboard"); 
+           toast.success("Login successful!");
         } else {
-          navigate("/mentee-dashboard");
+          navigate("/mentee-dashboard"); 
+           toast.success("Login successful!");
         }
       } else {
-        setError("Server error: Missing token or role");
+        setError("Server error: Missing token or role"); 
+
       }
     } catch (error) {
-      setError(error.message);
+      setError(error.message); 
+         toast.error(error.message || "An error occurred during login.");
     } finally {
       setLoading(false);
     }
@@ -110,13 +134,16 @@ const Login = () => {
         // Redirect based on role
         navigate(
           user?.role === "mentor" ? "/mentor-dashboard" : "/mentee-dashboard"
-        );
+        ); 
+          toast.success("Google sign-in successful!");
       } else {
-        setError("Role not found. Please complete your profile.");
+        setError("Role not found. Please complete your profile."); 
+         toast.error("Role not found. Please complete your profile.");
       }
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-      setError("Email not found. Please sign up.");
+      setError("Email not found. Please sign up."); 
+       toast.error("Email not found. Please sign up.");
     } finally {
       setLoading(false);
     }
@@ -180,13 +207,15 @@ const Login = () => {
             <button
               type="submit"
               className="w-1/2 bg-blue-500 hover:bg-blue-900 text-white font-semibold py-3 rounded-lg transition duration-300 text-center cursor-pointer"
+               disabled={loading}
             >
               {loading ? "Logging in..." : "Login"}
             </button>
             <span className="text-gray-500">or</span>
             <GoogleButton
               onClick={handleGoogleSignIn}
-              className="w-1/2 flex justify-center font-semibold"
+              className="w-1/2 flex justify-center font-semibold" 
+               disabled={loading}
               label="Sign in with Google"
             />
           </div>
@@ -207,8 +236,10 @@ const Login = () => {
               Create one
             </span>
           </p>
-        </div>
+        </div> 
+       
       </div>
+        <ToastContainer />
     </div>
   );
 };

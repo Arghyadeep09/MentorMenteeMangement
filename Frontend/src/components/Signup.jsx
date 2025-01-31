@@ -5,7 +5,8 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';   
 const Signup = () => {
   const [prefix, setPrefix] = useState("");
   const [name, setName] = useState("");
@@ -15,12 +16,52 @@ const Signup = () => {
   const [role, setRole] = useState("mentee");
   const [expertise, setExpertise] = useState(""); // New state for Mentor's Expertise
   const [experience, setExperience] = useState(""); // New state for Mentor's Experience
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-
-  const handleSignup = async (e) => {
+  const [error, setError] = useState(""); 
+  const [loading, setLoading] = useState(false); 
+   const [passwordVisible, setPasswordVisible] = useState(false); // New state
+  const navigate = useNavigate(); 
+  const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
+   const validateForm = () => {
+    let isValid = true;
+    const nameRegex = /^[A-Za-z]+$/; // Regular expression to allow only letters
+    if (!name.trim()) {
+      toast.error("First Name is required.");
+      isValid = false;
+    } else if (!nameRegex.test(name)) {
+      toast.error("First Name must contain only letters.");
+      isValid = false;
+    }
+    if (!surname.trim()) {
+      toast.error("Last Name is required.");
+      isValid = false;
+    } else if (!nameRegex.test(surname)) {
+      toast.error("Last Name must contain only letters.");
+      isValid = false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      toast.error("Email is required.");
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
+      toast.error("Invalid email format.");
+      isValid = false;
+    }
+    if (!password) {
+      toast.error("Password is required.");
+      isValid = false;
+    } else if (password.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      isValid = false;
+    }
+    
+    return isValid;
+  };
+  const handleSignup = async (e) => { 
+  
     e.preventDefault();
-    setError("");
+      if (!validateForm()) return;
+    setError(""); 
+    setLoading(true);
 
     try {
       console.log("Sending Request:", { email, password, role });
@@ -53,9 +94,11 @@ const Signup = () => {
       console.log("Signup Response:", response.data);
 
       if (response.data.role === "mentor") {
-        navigate("/mentor-dashboard");
+        navigate("/mentor-dashboard"); 
+          toast.success("Account created successfully!");
       } else {
-        navigate("/mentee-dashboard");
+        navigate("/mentee-dashboard"); 
+          toast.success("Account created successfully!");
       }
     } catch (err) {
       console.error(
@@ -64,7 +107,11 @@ const Signup = () => {
       );
       setError(
         err.response ? err.response.data.error || "Signup failed!" : err.message
-      );
+      ); 
+         toast.error(err.response ? err.response.data.error || "Signup failed!" : err.message);
+    } 
+    finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -162,9 +209,10 @@ const Signup = () => {
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-900 text-white 
             font-semibold px-4 py-2 
-            border border-white  cursor-pointer rounded-lg transition duration-300"
+            border border-white  cursor-pointer rounded-lg transition duration-300" 
+             disabled={loading}
           >
-            Sign up
+            {loading ? "Logging in..." : "Sign Up"}
           </button>
         </form>
 
@@ -181,7 +229,8 @@ const Signup = () => {
             Log In
           </Link>
         </p>
-      </div>
+      </div> 
+      <ToastContainer />
     </div>
   );
 };

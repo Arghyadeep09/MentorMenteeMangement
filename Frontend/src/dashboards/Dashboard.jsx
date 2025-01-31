@@ -1,5 +1,7 @@
 import React  from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; 
+
+
 import { Clock, Award, Headphones ,Calendar, Bell, MessageSquare} from 'lucide-react';
 const Dashboard = () => {
 
@@ -24,7 +26,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Navbar */}
-      <nav className="flex justify-between items-center p-4 bg-gray-900  px-12 py-18">
+      <nav className="flex justify-between items-center p-4 bg-gray-900  px-12 py-6">
         <div className="text-3xl font-bold text-blue-400">MentorConnect</div>
         <div>
           <Link to="/signup">
@@ -79,12 +81,8 @@ const Dashboard = () => {
       <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
       <div className="relative flex w-full max-w-4xl">
         {/* Background image card */}
-        <div className="relative w-72 h-[500px] rounded-3xl overflow-hidden">
-          <img
-            src="/api/placeholder/400/600"
-            alt="Tools"
-            className="w-full h-full object-cover"
-          />
+        <div className="relative w-72 h-[600px] rounded-3xl overflow-hidden">
+         
         </div>
 
         {/* Main content card */}
@@ -113,7 +111,7 @@ const Dashboard = () => {
           <div className="space-y-6">
             <div className="flex items-start gap-4">
               <div className="p-2 bg-blue-50 rounded-lg">
-                <Clock className="w-5 h-5 text-blue-600" />
+                <Clock className="w-5 h-5 text-blue-600  transform hover:scale-110 transition-transform duration-300" />
               </div>
               <div>
                 <h4 className="font-semibold text-slate-800 mb-1"> Experienced Mentors</h4>
@@ -123,7 +121,7 @@ const Dashboard = () => {
 
             <div className="flex items-start gap-4">
               <div className="p-2 bg-blue-50 rounded-lg">
-                <Headphones className="w-5 h-5 text-blue-600" />
+                <Headphones className="w-5 h-5 text-blue-600  transform hover:scale-110 transition-transform duration-300" />
               </div>
               <div>
                 <h4 className="font-semibold text-slate-800 mb-1">Scheduled Support</h4>
@@ -133,7 +131,7 @@ const Dashboard = () => {
 
             <div className="flex items-start gap-4">
               <div className="p-2 bg-blue-50 rounded-lg">
-                <Award className="w-5 h-5 text-blue-600" />
+                <Award className="w-5 h-5 text-blue-600  transform hover:scale-110 transition-transform duration-300" />
               </div>
               <div>
                 <h4 className="font-semibold text-slate-800 mb-1">Industry Certified</h4>
@@ -196,7 +194,7 @@ const Dashboard = () => {
         </div>
       ))}
     </div>
-      {/* Steps to Get Started */}
+      {/* Steps to Get Started */} 
       <section id="how-it-works" className="p-10 bg-gray-800 text-center">
         <h2 className="text-3xl font-semibold mb-8">How It Works</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
