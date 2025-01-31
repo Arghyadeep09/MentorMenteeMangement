@@ -5,6 +5,8 @@ import axios from "axios";
 import { UserAuth } from "../context/AuthContext";
 import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom"; // Add this for navigation
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const daysOfWeek = [
   "Monday",
@@ -107,10 +109,11 @@ const MentorDashboard = () => {
         }
       );
   
-      console.log("Fetched Bookings:", response.data); // Debugging
+      console.log("Fetched Bookings:", response.data); // Debugging 
       setBookings(response.data);
     } catch (error) {
       console.error("Error fetching bookings:", error);
+       toast.error("Failed to fetch bookings. Please try again later.");
     }
   };
   
@@ -150,10 +153,11 @@ const MentorDashboard = () => {
         }
       );
       console.log("Slot created successfully"); // Debugging: Confirm slot creation
-
+        toast.success("Availability updated successfully!");
       setAvailability(updatedAvailability); // Update the state with the new availability
     } catch (error) {
-      console.error("Error updating availability:", error); // Debugging: Check error message
+      console.error("Error updating availability:", error); // Debugging: Check error message 
+       toast.error("Failed to update availability. Please try again.");
     }
   };
 
@@ -171,9 +175,11 @@ const MentorDashboard = () => {
         }
       );
       console.log("Updated Mentor Details:", response.data);
+         toast.success("Profile updated successfully!");
       setMentorDetails(editableDetails); // Update the mentor details in the state
       setIsEditMode(false); // Exit edit mode
     } catch (error) {
+        toast.error("Failed to update profile. Please try again later.");
       console.error("Error updating mentor details:", error);
     }
   };
@@ -182,9 +188,11 @@ const MentorDashboard = () => {
   const handleLogout = async () => {
     try {
       await auth.signOut(); // Sign out the user from Firebase
+       localStorage.clear();
       navigate("/login"); // Navigate to the login page after logout
     } catch (error) {
-      console.error("Error logging out:", error); // Handle any errors during logout
+      console.error("Error logging out:", error); // Handle any errors during logout 
+        toast.error("Logout failed");
     }
   };
 
@@ -326,7 +334,18 @@ const MentorDashboard = () => {
             <p className="text-gray-300">No bookings found.</p>
           )}
         </ul>
-      </div>
+      </div> 
+      <ToastContainer
+  position="top-right"
+  autoClose={5000}
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss
+  draggable
+  pauseOnHover
+/>
     </div>
   );
 };
