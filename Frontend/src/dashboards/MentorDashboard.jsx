@@ -7,6 +7,7 @@ import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom"; // Add this for navigation
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CalendarClock,User,Clock} from "lucide-react";
 
 const daysOfWeek = [
   "Monday",
@@ -204,24 +205,24 @@ const MentorDashboard = () => {
         whileHover={{ scale: 1.01 }}
       >
         <div className="flex items-center space-x-4">
-          <UserCircle size={50} className="text-blue-500" />
+          <UserCircle size={52} className="text-blue-600" />
           <div>
             <h2 className="text-2xl font-bold">
               {mentorDetails.prefix || "Mr."} {mentorDetails.name || "Mentor Name"} {mentorDetails.surname || "Mentor Surname"}
             </h2>
             <p className="text-gray-500">{mentorDetails.expertise || "Expert in Web Development"}</p>
-            <p className="text-gray-400">Experience: {mentorDetails.experience || "N/A"} years</p>
+            <p className="text-gray-500">Experience: {mentorDetails.experience || "N/A"} years</p>
           </div>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex space-x-4">
           <button
-            className="text-blue-700 text-bold cursor-pointer bg-blue-100 py-2 px-4 rounded-lg hover:bg-blue-200"
+            className="text-blue-700 text-bold cursor-pointer bg-blue-100 py-2 px-4 rounded-lg hover:bg-blue-200 transform hover:scale-110 transition-transform duration-300"
             onClick={() => setIsEditMode(!isEditMode)}
           >
             {isEditMode ? "Cancel" : "Edit Profile"}
           </button>
           <button
-            className="text-red-700 text-bold cursor-pointer bg-red-100 py-2 px-4 rounded-lg hover:bg-red-200"
+            className="text-red-700 text-bold cursor-pointer bg-red-100 py-2 px-4 rounded-lg hover:bg-red-200 transform hover:scale-110 transition-transform duration-300"
             onClick={handleLogout} // Logout on button click
           >
             Logout
@@ -288,20 +289,20 @@ const MentorDashboard = () => {
 
       {/* Availability Section */}
       <div className="p-4">
-        <h3 className="text-lg font-semibold mb-3 flex items-center">
+        <h3 className="text-lg font-semibold mb-3  flex items-center">
           <CalendarDays className="mr-2 text-blue-500" /> Select Your Available Slots
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {daysOfWeek.map((day) => (
-            <div key={day} className="p-3 border rounded-md">
+            <div key={day} className="p-3 border rounded-md transition duration-300 hover:shadow-2xl border border-gray-200">
               <h4 className="font-medium">{day}</h4>
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-2 mt-3">
                 {timeSlots.map((time) => (
                   <button
                     key={time}
                     className={`text-xs cursor-pointer px-4 py-2 rounded-md transition 
                       ${availability[day] === time
-                        ? "bg-blue-500 text-white"
+                        ? "bg-blue-500 text-white shadow-md"
                         : "bg-gray-200 text-black hover:bg-gray-300"
                       }`}
                     onClick={() => toggleAvailability(day, time)}
@@ -316,22 +317,29 @@ const MentorDashboard = () => {
       </div>
 
       {/* View Bookings Section */}
-      <div className="p-4">
-        <h3 className="mr-2 text-blue-500">View Bookings</h3>
+      <div className="p-6">
+        <h3 className="text-lg font-semibold mb-3  flex items-center">
+          <CalendarClock className="mr-2 text-blue-500" /> View Bookings
+        </h3>
         {/* Add booking view functionality here */}
         <ul className="space-y-2 mt-2">
           {bookings.length > 0 ? (
             bookings.map((booking) => (
               <li
                 key={booking._id}
-                className="bg-white p-3 rounded-lg shadow-md"
+                className="bg-white p-3 rounded-lg shadow-md border border-gray-200 transition duration-300 hover:shadow-1xl"
               >
-                <strong>{booking.menteeId?.name || "Unknown Mentee"}</strong> 
-                - {booking.startTime} to {booking.endTime}
+                <h4 className="text-lg font-semibold flex items-center">
+                <User className="mr-2 text-blue-500" /> 
+                {booking.menteeId?.name || "Unknown Mentee"}
+              </h4>
+              <p className="flex items-center mt-2 text-gray-600">
+                <Clock className="mr-2 text-blue-500" /> {booking.startTime} - {booking.endTime}
+              </p>
               </li>
             ))
           ) : (
-            <p className="text-gray-300">No bookings found.</p>
+            <p className="text-gray-400">No bookings found.</p>
           )}
         </ul>
       </div> 

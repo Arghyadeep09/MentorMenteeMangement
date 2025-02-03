@@ -9,7 +9,7 @@ import { UserAuth } from "../context/AuthContext";
 import { GoogleButton } from "react-google-button";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
-
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import "boxicons";
 
 const Login = () => {
@@ -158,7 +158,31 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-indigo-500 to-purple-500">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-indigo-500 to-purple-500"> 
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "linear-gradient(to top,#4dc9e6,#210cae)", // Adds a translucent overlay
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999, // Ensures the loading animation appears above everything
+          }}
+        >
+          <DotLottieReact
+            src="https://lottie.host/1df8fc93-cd88-43a2-891e-f7d8efc67efc/KoY5CKx1PJ.lottie"
+            loop
+            autoplay
+            width="200px"
+            height="200px"
+          />
+        </div>
+      )}
       <div className="bg-white bg-opacity-25 backdrop-blur-lg shadow-lg rounded-xl p-10 w-full max-w-lg">
         <h2 className="text-4xl font-bold text-blue-500 text-center mb-4">
           Welcome Back
@@ -174,7 +198,7 @@ const Login = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
+              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none  font-semibold"
             />
           </div>
 
@@ -184,7 +208,7 @@ const Login = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
+              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none  font-semibold"
             />
             <button
               type="button"
@@ -228,7 +252,7 @@ const Login = () => {
         {/* Don't have an account? Signup Link */}
         <div className="mt-6 text-center">
           <p className="text-gray-500 font-semibold">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <span
               className="text-blue-400 hover:underline hover:text-blue-500  cursor-pointer"
               onClick={() => navigate("/signup")}
