@@ -45,7 +45,7 @@ FIREBASE_ADMIN_SDK_JSON=path_to_your_firebase_admin_sdk_json_file
 <pre> 
 <code>npm start</code> 
 </pre> 
-<p>The backend server will run on <strong>https://mentormenteemangement.onrender.com</strong></p> 
+<p>The backend server will run on <strong>https://mentormenteemangement-1.onrender.com/</strong></p> 
 <h2>
  🎨
  Frontend Setup</h2> 
