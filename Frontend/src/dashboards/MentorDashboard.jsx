@@ -57,7 +57,7 @@ const MentorDashboard = () => {
       try {
         const token = await auth.currentUser.getIdToken();
         const response = await axios.get(
-          `https://mentormenteemangement.onrender.com/api/mentor/details?mentorId=${user.id}`,
+          `https://mentormenteemangement-1.onrender.com//api/mentor/details?mentorId=${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log("Mentor Details:", response.data); // Debugging: check fetched data
@@ -77,7 +77,7 @@ const MentorDashboard = () => {
       try {
         const token = await auth.currentUser.getIdToken();
         const response = await axios.get(
-          `https://mentormenteemangement.onrender.com/api/mentor/slots?mentorId=${user.id}`,
+          `https://mentormenteemangement-1.onrender.com//api/mentor/slots?mentorId=${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log("Fetched Slots: ", response.data); // Debugging: check fetched data
@@ -99,7 +99,7 @@ const MentorDashboard = () => {
     try {
       const token = await auth.currentUser.getIdToken();
       const response = await axios.get(
-        `https://mentormenteemangement.onrender.com/api/mentor/bookings?mentorId=${user.id}`,
+        `https://mentormenteemangement-1.onrender.com//api/mentor/bookings?mentorId=${user.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -129,7 +129,7 @@ const MentorDashboard = () => {
       if (updatedAvailability[day]) {
         console.log("Deleting Slot for: ", day, updatedAvailability[day]); // Debugging: Check what is being deleted
         await axios.delete(
-          `https://mentormenteemangement.onrender.com/api/mentor/delete-slot?mentorId=${user.id}&day=${day}`,
+          `https://mentormenteemangement-1.onrender.com//api/mentor/delete-slot?mentorId=${user.id}&day=${day}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         delete updatedAvailability[day]; // Remove previous slot
@@ -140,7 +140,7 @@ const MentorDashboard = () => {
       console.log("Updated Availability:", updatedAvailability); // Debugging: Check updated state
 
       await axios.post(
-        "https://mentormenteemangement.onrender.com/api/mentor/create-slot",
+        "https://mentormenteemangement-1.onrender.com//api/mentor/create-slot",
         { mentorId: user.id, day, time },
         {
           headers: {
@@ -161,7 +161,7 @@ const MentorDashboard = () => {
     try {
       const token = await auth.currentUser.getIdToken();
       const response = await axios.put(
-        `https://mentormenteemangement.onrender.com/api/mentor/update?mentorId=${user.id}`,
+        `https://mentormenteemangement-1.onrender.com//api/mentor/update?mentorId=${user.id}`,
         editableDetails,
         {
           headers: {

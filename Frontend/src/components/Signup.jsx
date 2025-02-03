@@ -46,7 +46,7 @@ const Signup = () => {
       };
 
       const response = await axios.post(
-        "https://mentormenteemangement.onrender.com/api/auth/signup",
+        "https://mentormenteemangement-1.onrender.com//api/auth/signup",
         userData
       );
 
