@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';         
 import { auth } from "../firebaseConfig";
 import axios from "axios";
 import { BiShow, BiHide } from "react-icons/bi";
@@ -7,6 +9,7 @@ import { UserAuth } from "../context/AuthContext";
 import { GoogleButton } from "react-google-button";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import "boxicons";
 
 const Login = () => {
@@ -27,10 +30,27 @@ const Login = () => {
       setPassword(savedPassword);
       setRememberMe(true);
     }
-  }, []);
+  }, []); 
+  const validateForm = () => {
+    if (!email || !password) {
+      toast.error("Both email and password are required.");
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      toast.error("Please enter a valid email address.");
+      return false;
+    }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return false;
+    }
+    return true;
+  };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
+     if (!validateForm()) return;
     setError("");
     setLoading(true);
     
@@ -66,15 +86,19 @@ const Login = () => {
           localStorage.removeItem("password");
         }
         if (user?.role === "mentor") {
-          navigate("/mentor-dashboard");
+          navigate("/mentor-dashboard"); 
+           toast.success("Login successful!");
         } else {
-          navigate("/mentee-dashboard");
+          navigate("/mentee-dashboard"); 
+           toast.success("Login successful!");
         }
       } else {
-        setError("Server error: Missing token or role");
+        setError("Server error: Missing token or role"); 
+
       }
     } catch (error) {
-      setError(error.message);
+      setError(error.message); 
+         toast.error(error.message || "An error occurred during login.");
     } finally {
       setLoading(false);
     }
@@ -110,13 +134,16 @@ const Login = () => {
         // Redirect based on role
         navigate(
           user?.role === "mentor" ? "/mentor-dashboard" : "/mentee-dashboard"
-        );
+        ); 
+          toast.success("Google sign-in successful!");
       } else {
-        setError("Role not found. Please complete your profile.");
+        setError("Role not found. Please complete your profile."); 
+         toast.error("Role not found. Please complete your profile.");
       }
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-      setError("Email not found. Please sign up.");
+      setError("Email not found. Please sign up."); 
+       toast.error("Email not found. Please sign up.");
     } finally {
       setLoading(false);
     }
@@ -131,7 +158,31 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-indigo-500 to-purple-500">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-indigo-500 to-purple-500"> 
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "linear-gradient(to top,#4dc9e6,#210cae)", // Adds a translucent overlay
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999, // Ensures the loading animation appears above everything
+          }}
+        >
+          <DotLottieReact
+            src="https://lottie.host/1df8fc93-cd88-43a2-891e-f7d8efc67efc/KoY5CKx1PJ.lottie"
+            loop
+            autoplay
+            width="200px"
+            height="200px"
+          />
+        </div>
+      )}
       <div className="bg-white bg-opacity-25 backdrop-blur-lg shadow-lg rounded-xl p-10 w-full max-w-lg">
         <h2 className="text-4xl font-bold text-blue-500 text-center mb-4">
           Welcome Back
@@ -147,7 +198,7 @@ const Login = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
+              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none  font-semibold"
             />
           </div>
 
@@ -157,7 +208,7 @@ const Login = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none cursor-pointer font-semibold"
+              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-300 focus:outline-none  font-semibold"
             />
             <button
               type="button"
@@ -180,13 +231,15 @@ const Login = () => {
             <button
               type="submit"
               className="w-1/2 bg-blue-500 hover:bg-blue-900 text-white font-semibold py-3 rounded-lg transition duration-300 text-center cursor-pointer"
+               disabled={loading}
             >
               {loading ? "Logging in..." : "Login"}
             </button>
             <span className="text-gray-500">or</span>
             <GoogleButton
               onClick={handleGoogleSignIn}
-              className="w-1/2 flex justify-center font-semibold"
+              className="w-1/2 flex justify-center font-semibold" 
+               disabled={loading}
               label="Sign in with Google"
             />
           </div>
@@ -199,7 +252,7 @@ const Login = () => {
         {/* Don't have an account? Signup Link */}
         <div className="mt-6 text-center">
           <p className="text-gray-500 font-semibold">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <span
               className="text-blue-400 hover:underline hover:text-blue-500  cursor-pointer"
               onClick={() => navigate("/signup")}
@@ -207,8 +260,10 @@ const Login = () => {
               Create one
             </span>
           </p>
-        </div>
+        </div> 
+       
       </div>
+        <ToastContainer />
     </div>
   );
 };
