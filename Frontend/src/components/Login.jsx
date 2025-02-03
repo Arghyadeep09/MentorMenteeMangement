@@ -64,7 +64,7 @@ const Login = () => {
       const token = await userCredential.user.getIdToken();
 
       const response = await axios.post(
-        "https://mentormenteemangement-1.onrender.com//api/auth/login",
+        "https://mentormenteemangement.onrender.com/api/auth/login",
         { token },
         {
           headers: {
@@ -115,7 +115,7 @@ const Login = () => {
       
       // Fetch user details from MongoDB using the email
       const { data } = await axios.get(
-        `https://mentormenteemangement-1.onrender.com//api/users/users?email=${email}`,
+        `https://mentormenteemangement.onrender.com/api/users/users?email=${email}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -95,7 +95,7 @@ const [isPasswordVisible, setIsPasswordVisible] = useState(false); // New state
       };
 
       const response = await axios.post(
-        "https://mentormenteemangement-1.onrender.com//api/auth/signup",
+        "https://mentormenteemangement.onrender.com/api/auth/signup",
         userData
       );
 
