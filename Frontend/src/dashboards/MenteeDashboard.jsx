@@ -37,7 +37,7 @@
 //       const dayOfWeek = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
 
 //       // Fetch available slots for this weekday
-//       const response = await axios.get(`https://mentormenteemangement-1.onrender.com//api/mentors/available-slots?date=${dayOfWeek}`);
+//       const response = await axios.get(`https://localhost:5000///api/mentors/available-slots?date=${dayOfWeek}`);
 
 //       console.log("Mentor Slots:", response.data);
 //       setMentorSlots(response.data);
@@ -49,7 +49,7 @@
 //   // Fetch booking history
 //   const fetchBookings = async () => {
 //     try {
-//       const response = await axios.get("https://mentormenteemangement-1.onrender.com//api/bookings");
+//       const response = await axios.get("https://localhost:5000///api/bookings");
 //       setBookings(response.data);
 //     } catch (error) {
 //       console.error("Error fetching bookings:", error);
@@ -71,7 +71,7 @@
 //   // Book a mentor session
 //   const bookSession = async (mentorId, slotTime) => {
 //     try {
-//       await axios.post("https://mentormenteemangement-1.onrender.com//book-slot", {
+//       await axios.post("https://localhost:5000///book-slot", {
 //         mentorId,
 //         slot: slotTime,
 //       });
@@ -218,7 +218,7 @@
 
 //   const fetchBookings = async () => {
 //     try {
-//       const response = await axios.get("https://mentormenteemangement-1.onrender.com//api/bookings");
+//       const response = await axios.get("https://localhost:5000///api/bookings");
 //       setBookings(response.data);
 //     } catch (error) {
 //       console.error("Error fetching bookings:", error);
@@ -232,7 +232,7 @@
 
 //       console.log(`Fetching available slots for: ${dayOfWeek}`);
 //       // Fetch available slots for this weekday
-//       const response = await axios.get(`https://mentormenteemangement-1.onrender.com//api/mentor/available-slots?date=${dayOfWeek}`);
+//       const response = await axios.get(`https://localhost:5000///api/mentor/available-slots?date=${dayOfWeek}`);
 //       console.log("Mentor Slots:", response.data);
 //       setMentorSlots(response.data);
 //     } catch (error) {
@@ -248,7 +248,7 @@
 //   // Book a mentor session
 //   const bookSession = async (mentorId, slotTime) => {
 //     try {
-//       await axios.post("https://mentormenteemangement-1.onrender.com//book-slot", {
+//       await axios.post("https://localhost:5000///book-slot", {
 //         mentorId,
 //         slot: slotTime,
 //       });
@@ -408,7 +408,7 @@ const MenteeDashboard = () => {
       }
 
       const response = await axios.get(
-        "https://mentormenteemangement-1.onrender.com//api/mentee/bookings",
+        "https://mentormenteemangement.onrender.com/api/mentee/bookings",
         {
           headers: {
             Authorization: `Bearer ${token}`, // Add JWT token for authentication
@@ -427,20 +427,9 @@ const MenteeDashboard = () => {
     }
   };
 
-  const fetchMentorSlots = async (selectedDate) => {
-    try {
-      const dayOfWeek = selectedDate.toLocaleDateString("en-US", {
-        weekday: "long",
-      });
-      console.log(`Fetching available slots for: ${dayOfWeek}`);
-      const response = await axios.get(
-        `https://mentormenteemangement-1.onrender.com//api/mentor/available-slots?date=${dayOfWeek}`
-      );
-      setMentorSlots(response.data);
-    } catch (error) {
-      console.error("Error fetching mentor slots:", error);
-    }
-  };  
+  // 
+  
+  
   // new
   useEffect(() => {
     const fetchAllMentorSlots = async () => {
@@ -481,7 +470,7 @@ const MenteeDashboard = () => {
       }
 
       const response = await axios.post(
-        "https://mentormenteemangement-1.onrender.com//api/mentee/book-slot",
+        "https://mentormenteemangement.onrender.com/api/mentee/book-slot",
         {
           mentorId,
           slot: slotTime, // Example format: "4:00 PM - 5:00 PM"
