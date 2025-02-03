@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';   
 import { BiShow, BiHide } from "react-icons/bi";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 const Signup = () => {
   const [prefix, setPrefix] = useState("");
   const [name, setName] = useState("");
@@ -123,12 +124,36 @@ const [isPasswordVisible, setIsPasswordVisible] = useState(false); // New state
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-purple-500 to-blue-500">
-      <div className="bg-white bg-opacity-20 backdrop-blur-lg shadow-lg rounded-xl p-8 w-full max-w-md">
-        <h2 className="text-4xl font-bold text-blue-500 text-center">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-purple-500 to-blue-500"> 
+        {loading && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "linear-gradient(to top,#4dc9e6,#210cae)", // Adds a translucent overlay
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999, // Ensures the loading animation appears above everything
+          }}
+        >
+          <DotLottieReact
+            src="https://lottie.host/1df8fc93-cd88-43a2-891e-f7d8efc67efc/KoY5CKx1PJ.lottie"
+            loop
+            autoplay
+            width="200px"
+            height="200px"
+          />
+        </div>
+      )}
+      <div className="bg-white bg-opacity-25 backdrop-blur-lg shadow-lg rounded-xl p-10 w-full max-w-md">
+        <h2 className="text-4xl font-bold text-blue-500 text-center mb-4">
           Create Account
         </h2>
-        <p className="text-gray-500 font-semibold text-center mb-4">
+        <p className="text-gray-500 font-semibold text-center mb-6">
           Join us and start your journey
         </p>
 

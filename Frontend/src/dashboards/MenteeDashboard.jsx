@@ -366,10 +366,13 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import { UserAuth } from "../context/AuthContext";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { UserCircle, CalendarDays, CalendarClock, User, Clock, LogOut } from "lucide-react";
 
 const MenteeDashboard = () => {
-  const { user, googleSignIn, logout } = UserAuth();
+  const { user, googleSignIn, logout } = UserAuth(); 
+  
   const [mentorSlots, setMentorSlots] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -437,7 +440,25 @@ const MenteeDashboard = () => {
     } catch (error) {
       console.error("Error fetching mentor slots:", error);
     }
-  };
+  };  
+  // new
+  useEffect(() => {
+    const fetchAllMentorSlots = async () => {
+      try {
+        console.log("Fetching all available slots for all mentors");
+        const response = await axios.get(
+          `https://mentormenteemangement.onrender.com/api/mentor/available-slots`
+        );
+        // Assuming the response contains a list of mentors with their available slots
+        setMentorSlots(response.data);
+      } catch (error) {
+        console.error("Error fetching mentor slots:", error);
+      }
+    };
+    fetchAllMentorSlots();
+  }, []); 
+
+
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -491,11 +512,22 @@ const MenteeDashboard = () => {
   };
 
   console.log("booking details", bookingDetails);
-
+  const daysOfWeek = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 flex flex-col items-center py-10">
+    <div className="max-w-5xl mx-auto p-6 space-y-6">
       {/* Navbar */}
-      <div className="navbar bg-white bg-opacity-20 backdrop-blur-md shadow-lg w-full max-w-5xl h-16 flex items-center px-8  justify-between rounded-lg">
+        <motion.div
+        className="flex items-center justify-between bg-white shadow-lg p-4 rounded-2xl"
+        whileHover={{ scale: 1.01 }}
+      >
         <h1 className="text-2xl font-bold text-gray-500">
           Welcome{user ? `, ${user.name}` : ""}!
         </h1>
@@ -517,12 +549,12 @@ const MenteeDashboard = () => {
             Sign In
           </button>
         )}
-      </div>
+      </motion.div>
 
       {/* Dashboard Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 w-full max-w-5xl">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 w-full max-w-5xl">
         {/* Calendar Section */}
-        <div className="p-6 bg-gray-100 bg-opacity-20 backdrop-blur-md shadow-md rounded-xl flex items-center flex-col ">
+        {/* <div className="p-6 bg-gray-100 bg-opacity-20 backdrop-blur-md shadow-md rounded-xl flex items-center flex-col ">
           <h3 className="text-2xl font-bold text-gray-700 p-2 mb-3">
             Select a Date
           </h3>
@@ -531,10 +563,10 @@ const MenteeDashboard = () => {
             value={selectedDate}
             className="bg-gray-100 bg-opacity-30  rounded-lg p-4 shadow-md mb-4"
           />
-        </div>
+        </div> */}
 
         {/* Available Slots */}
-        <div className="p-6 bg-gray-100 flex flex-col items-center bg-opacity-20 backdrop-blur-md shadow-md rounded-xl ">
+        {/* <div className="p-6 bg-gray-100 flex flex-col items-center bg-opacity-20 backdrop-blur-md shadow-md rounded-xl ">
           <h3 className="text-2xl font-bold text-gray-700 mb-3">
             Available Slots on :{" "}
             <span className="text-blue-500 font-semibold text-xl font-mono">
@@ -580,7 +612,54 @@ const MenteeDashboard = () => {
             <p className="text-gray-200">No slots available for this date.</p>
           )}
         </div>
-      </div>
+      </div> */} 
+
+      {/* new  */}
+    <div className="p-6 bg-white rounded-xl shadow-md">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <CalendarDays className="mr-2 text-blue-500" /> Available Mentors
+      </h3>
+
+      {/* Display mentor slots for each day of the week */}
+      {daysOfWeek.map((day) => (
+        <div key={day} className="mb-4">
+          <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
+          {/* Filter mentors who have available slots on the current day */}
+          {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.day === day)) ? (
+            mentorSlots
+              .filter((mentor) => mentor.slots.some((slot) => slot.day === day)) // Filter mentors by day
+              .map((mentor) => (
+                <div key={mentor.id} className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all">
+                  <p className="font-medium text-gray-800">{mentor.name}</p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {/* Filter the slots for the current day */}
+                    {mentor.slots
+                      .filter((slot) => slot.day === day)
+                      .map((slot) => (
+                        <button
+                          key={slot.time}
+                          className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all ${
+                            bookedSlotIds.includes(slot.time) ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                          onClick={() =>
+                            bookedSlotIds.includes(slot.time) ? null : bookSession(mentor.id, slot.time)
+                          }
+                          disabled={bookedSlotIds.includes(slot.time)}
+                        >
+                          {slot.time}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              ))
+          ) : (
+            <p className="text-gray-400">No available mentors for {day}.</p>
+          )}
+        </div>
+      ))}
+    </div>
+  
+
 
       {/* My Booking Section */}
       {/* {isBooked && bookingDetails && (
@@ -605,28 +684,35 @@ const MenteeDashboard = () => {
 
       {/* Booking History */}
       <div className="p-6 bg-white bg-opacity-20 backdrop-blur-md shadow-md rounded-xl mt-10 w-full max-w-5xl">
-        <h3 className="text-lg font-semibold text-gray-500 mb-3">
-          Booking History
+        <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-black-500 mb-3 flex items-center">
+            <CalendarClock className="mr-2 text-blue-500" />My  Bookings.
         </h3>
         <button
           onClick={fetchBookings}
-          className="bg-blue-400 hover:bg-blue-600 text-white px-3 py-1 rounded-lg cursor-pointer"
+          className="bg-blue-400 hover:bg-blue-600 text-white px-3 py-1 rounded-lg cursor-pointer shadow-md transition-all"
         >
           Refresh Bookings
-        </button>
+          </button>
+          </div>
         <ul className="space-y-2 mt-2">
           {bookings.length > 0 ? (
+           
             bookings.map((booking) => (
-              <li
+              <li  
                 key={booking._id}
-                className="bg-white p-3 rounded-lg shadow-md"
-              >
-                <strong>{bookings.mentorId?.prefix}{booking.mentorId?.name}</strong> - {booking.startTime} to{" "}
-                {booking.endTime}
-              </li>
+                className="bg-white p-3 rounded-lg shadow-md border"
+              > 
+                 <h4 className="text-lg font-semibold flex items-center">
+      <User className="mr-2 text-blue-500" /> {bookings.mentorId?.prefix} {bookings.mentorId?.name || "Unknown Mentor"}
+    </h4>
+    <p className="flex items-center mt-2 text-gray-600">
+                  <Clock className="mr-2 text-blue-500" /> {bookings.day}, {bookings.startTime} 
+                  </p>
+              </li> 
             ))
           ) : (
-            <p className="text-gray-300">No bookings found.</p>
+            <p className="text-gray-400">No bookings yet.</p>
           )}
         </ul>
       </div>
