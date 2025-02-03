@@ -387,13 +387,13 @@ const MenteeDashboard = () => {
     fetchBookings();
   }, []);
 
-  // useEffect(() => {
-  //   if (!user) {
-  //     setTimeout(() => {
-  //       navigate("/login");
-  //     }, 1000);
-  //   }
-  // }, [user, navigate]);
+  useEffect(() => {
+    if (!user) {
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    }
+  }, [user, navigate]);
 
   const handleLogout = async () => {
     await logout();
@@ -440,7 +440,25 @@ const MenteeDashboard = () => {
     } catch (error) {
       console.error("Error fetching mentor slots:", error);
     }
-  };
+  };  
+  // new
+  useEffect(() => {
+    const fetchAllMentorSlots = async () => {
+      try {
+        console.log("Fetching all available slots for all mentors");
+        const response = await axios.get(
+          `https://mentormenteemangement.onrender.com/api/mentor/available-slots`
+        );
+        // Assuming the response contains a list of mentors with their available slots
+        setMentorSlots(response.data);
+      } catch (error) {
+        console.error("Error fetching mentor slots:", error);
+      }
+    };
+    fetchAllMentorSlots();
+  }, []); 
+
+
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -534,9 +552,9 @@ const MenteeDashboard = () => {
       </motion.div>
 
       {/* Dashboard Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 w-full max-w-5xl">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 w-full max-w-5xl">
         {/* Calendar Section */}
-        <div className="p-6 bg-gray-100 bg-opacity-20 backdrop-blur-md shadow-md rounded-xl flex items-center flex-col ">
+        {/* <div className="p-6 bg-gray-100 bg-opacity-20 backdrop-blur-md shadow-md rounded-xl flex items-center flex-col ">
           <h3 className="text-2xl font-bold text-gray-700 p-2 mb-3">
             Select a Date
           </h3>
@@ -545,10 +563,10 @@ const MenteeDashboard = () => {
             value={selectedDate}
             className="bg-gray-100 bg-opacity-30  rounded-lg p-4 shadow-md mb-4"
           />
-        </div>
+        </div> */}
 
         {/* Available Slots */}
-        <div className="p-6 bg-gray-100 flex flex-col items-center bg-opacity-20 backdrop-blur-md shadow-md rounded-xl ">
+        {/* <div className="p-6 bg-gray-100 flex flex-col items-center bg-opacity-20 backdrop-blur-md shadow-md rounded-xl ">
           <h3 className="text-2xl font-bold text-gray-700 mb-3">
             Available Slots on :{" "}
             <span className="text-blue-500 font-semibold text-xl font-mono">
@@ -594,8 +612,54 @@ const MenteeDashboard = () => {
             <p className="text-gray-200">No slots available for this date.</p>
           )}
         </div>
-      </div>
-      
+      </div> */} 
+
+      {/* new  */}
+    <div className="p-6 bg-white rounded-xl shadow-md">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <CalendarDays className="mr-2 text-blue-500" /> Available Mentors
+      </h3>
+
+      {/* Display mentor slots for each day of the week */}
+      {daysOfWeek.map((day) => (
+        <div key={day} className="mb-4">
+          <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
+          {/* Filter mentors who have available slots on the current day */}
+          {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.day === day)) ? (
+            mentorSlots
+              .filter((mentor) => mentor.slots.some((slot) => slot.day === day)) // Filter mentors by day
+              .map((mentor) => (
+                <div key={mentor.id} className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all">
+                  <p className="font-medium text-gray-800">{mentor.name}</p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {/* Filter the slots for the current day */}
+                    {mentor.slots
+                      .filter((slot) => slot.day === day)
+                      .map((slot) => (
+                        <button
+                          key={slot.time}
+                          className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all ${
+                            bookedSlotIds.includes(slot.time) ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                          onClick={() =>
+                            bookedSlotIds.includes(slot.time) ? null : bookSession(mentor.id, slot.time)
+                          }
+                          disabled={bookedSlotIds.includes(slot.time)}
+                        >
+                          {slot.time}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              ))
+          ) : (
+            <p className="text-gray-400">No available mentors for {day}.</p>
+          )}
+        </div>
+      ))}
+    </div>
+  
+
 
       {/* My Booking Section */}
       {/* {isBooked && bookingDetails && (
@@ -620,6 +684,7 @@ const MenteeDashboard = () => {
 
       {/* Booking History */}
       <div className="p-6 bg-white bg-opacity-20 backdrop-blur-md shadow-md rounded-xl mt-10 w-full max-w-5xl">
+        <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-black-500 mb-3 flex items-center">
             <CalendarClock className="mr-2 text-blue-500" />My  Bookings.
         </h3>
@@ -628,7 +693,8 @@ const MenteeDashboard = () => {
           className="bg-blue-400 hover:bg-blue-600 text-white px-3 py-1 rounded-lg cursor-pointer shadow-md transition-all"
         >
           Refresh Bookings
-        </button>
+          </button>
+          </div>
         <ul className="space-y-2 mt-2">
           {bookings.length > 0 ? (
            
