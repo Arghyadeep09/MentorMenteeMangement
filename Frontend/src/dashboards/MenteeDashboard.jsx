@@ -429,7 +429,7 @@ const MenteeDashboard = () => {
 
   // 
   
-  
+
   // new
   useEffect(() => {
     const fetchAllMentorSlots = async () => {
@@ -439,6 +439,8 @@ const MenteeDashboard = () => {
           `https://mentormenteemangement.onrender.com/api/mentor/available-slots`
         );
         // Assuming the response contains a list of mentors with their available slots
+
+        console.log("Mentor Slots:", response.data);  
         setMentorSlots(response.data);
       } catch (error) {
         console.error("Error fetching mentor slots:", error);
@@ -614,9 +616,9 @@ const MenteeDashboard = () => {
         <div key={day} className="mb-4">
           <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
           {/* Filter mentors who have available slots on the current day */}
-          {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.day === day)) ? (
+          {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.date === day)) ? (
             mentorSlots
-              .filter((mentor) => mentor.slots.some((slot) => slot.day === day)) // Filter mentors by day
+              .filter((mentor) => mentor.slots.some((slot) => slot.date === day)) // Filter mentors by day
               .map((mentor) => (
                 <div key={mentor.id} className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all">
                   <p className="font-medium text-gray-800">{mentor.name}</p>
