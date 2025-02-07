@@ -384,16 +384,11 @@ const MenteeDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchBookings();
+    fetchBookings(); 
+     fetchAllMentorSlots();
   }, []);
 
-  useEffect(() => {
-    if (!user) {
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
-    }
-  }, [user, navigate]);
+  
 
   const handleLogout = async () => {
     await logout();
@@ -431,12 +426,12 @@ const MenteeDashboard = () => {
   
 
   // new
-  useEffect(() => {
+  
     const fetchAllMentorSlots = async () => {
       try {
         console.log("Fetching all available slots for all mentors");
         const response = await axios.get(
-          `https://mentormenteemangement.onrender.com/api/mentor/available-slots`
+          `https://mentormenteemangement.onrender.com/api/mentor/all-available-slots`
         );
         // Assuming the response contains a list of mentors with their available slots
 
@@ -446,8 +441,7 @@ const MenteeDashboard = () => {
         console.error("Error fetching mentor slots:", error);
       }
     };
-    fetchAllMentorSlots();
-  }, []); 
+   
 
 
 
@@ -655,6 +649,7 @@ const MenteeDashboard = () => {
         ))
       )}
     </div>
+
   
 
 
@@ -701,10 +696,10 @@ const MenteeDashboard = () => {
                 className="bg-white p-3 rounded-lg shadow-md border"
               > 
                  <h4 className="text-lg font-semibold flex items-center">
-      <User className="mr-2 text-blue-500" /> {bookings.mentorId?.prefix} {bookings.mentorId?.name || "Unknown Mentor"}
+      <User className="mr-2 text-blue-500" /> {booking.mentorId?.prefix} {booking.mentorId?.name || "Unknown Mentor"}
     </h4>
     <p className="flex items-center mt-2 text-gray-600">
-                  <Clock className="mr-2 text-blue-500" /> {bookings.day}, {bookings.startTime} 
+                  <Clock className="mr-2 text-blue-500" /> {booking.day}, {booking.startTime} 
                   </p>
               </li> 
             ))
