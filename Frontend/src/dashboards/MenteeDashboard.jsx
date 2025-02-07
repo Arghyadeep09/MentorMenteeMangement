@@ -424,7 +424,7 @@ const MenteeDashboard = () => {
 
   // 
   
-  
+
   // new
   
     const fetchAllMentorSlots = async () => {
@@ -434,6 +434,8 @@ const MenteeDashboard = () => {
           `https://mentormenteemangement.onrender.com/api/mentor/all-available-slots`
         );
         // Assuming the response contains a list of mentors with their available slots
+
+        console.log("Mentor Slots:", response.data);  
         setMentorSlots(response.data);
       } catch (error) {
         console.error("Error fetching mentor slots:", error);
@@ -598,51 +600,56 @@ const MenteeDashboard = () => {
       </div> */} 
 
       {/* new  */}
-    <div className="p-6 bg-white rounded-xl shadow-md">
-  <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-    <CalendarDays className="mr-2 text-blue-500" /> Available Mentors
-  </h3>
+     {/* Available Mentors Section */}
+     <div className="p-6 bg-white rounded-xl shadow-md">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <CalendarDays className="mr-2 text-blue-500" /> Available Mentors
+      </h3>
 
-  {/* Check if mentorSlots is empty */}
-  {!mentorSlots || mentorSlots.length === 0 ? (
-    <p className="text-gray-500">No available mentors at the moment.</p>
-  ) : (
-    daysOfWeek.map((day) => (
-      <div key={day} className="mb-4">
-        <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
-        {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.day === day)) ? (
-          mentorSlots
-            .filter((mentor) => mentor.slots.some((slot) => slot.day === day))
-            .map((mentor) => (
-              <div key={mentor.id} className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all">
-                <p className="font-medium text-gray-800">{mentor.name}</p>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {mentor.slots
-                    .filter((slot) => slot.day === day)
-                    .map((slot) => (
-                      <button
-                        key={`${mentor.id}-${slot.time}`}
-                        className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all ${
-                          bookedSlotIds.includes(slot.time) ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        onClick={() =>
-                          bookedSlotIds.includes(slot.time) ? null : bookSession(mentor.id, slot.time)
-                        }
-                        disabled={bookedSlotIds.includes(slot.time)}
-                      >
-                        {slot.time}
-                      </button>
-                    ))}
-                </div>
-              </div>
-            ))
-        ) : (
-          <p className="text-gray-400">No available mentors for {day}.</p>
-        )}
-      </div>
-    ))
-  )}
-</div>
+      {/* Check if mentorSlots is empty */}
+      {!mentorSlots || mentorSlots.length === 0 ? (
+        <p className="text-gray-500">No available mentors at the moment.</p>
+      ) : (
+        daysOfWeek.map((day) => (
+          <div key={day} className="mb-4">
+            <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
+            {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.day === day)) ? (
+              mentorSlots
+                .filter((mentor) => mentor.slots.some((slot) => slot.day === day))
+                .map((mentor) => (
+                  <div
+                    key={mentor.id}
+                    className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all"
+                  >
+                    <p className="font-medium text-gray-800">{mentor.name}</p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {mentor.slots
+                        .filter((slot) => slot.day === day)
+                        .map((slot) => (
+                          <button
+                            key={`${mentor.id}-${slot.time}`}
+                            className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all ${
+                              bookedSlotIds.includes(slot.time) ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            onClick={() =>
+                              bookedSlotIds.includes(slot.time) ? null : bookSession(mentor.id, slot.time)
+                            }
+                            disabled={bookedSlotIds.includes(slot.time)}
+                          >
+                            {slot.time}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <p className="text-gray-400">No available mentors for {day}.</p>
+            )}
+          </div>
+        ))
+      )}
+    </div>
+
   
 
 
