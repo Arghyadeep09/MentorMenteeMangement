@@ -606,48 +606,54 @@ const MenteeDashboard = () => {
       </div> */} 
 
       {/* new  */}
-    <div className="p-6 bg-white rounded-xl shadow-md">
+     {/* Available Mentors Section */}
+     <div className="p-6 bg-white rounded-xl shadow-md">
       <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
         <CalendarDays className="mr-2 text-blue-500" /> Available Mentors
       </h3>
 
-      {/* Display mentor slots for each day of the week */}
-      {daysOfWeek.map((day) => (
-        <div key={day} className="mb-4">
-          <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
-          {/* Filter mentors who have available slots on the current day */}
-          {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.date === day)) ? (
-            mentorSlots
-              .filter((mentor) => mentor.slots.some((slot) => slot.date === day)) // Filter mentors by day
-              .map((mentor) => (
-                <div key={mentor.id} className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all">
-                  <p className="font-medium text-gray-800">{mentor.name}</p>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {/* Filter the slots for the current day */}
-                    {mentor.slots
-                      .filter((slot) => slot.day === day)
-                      .map((slot) => (
-                        <button
-                          key={slot.time}
-                          className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all ${
-                            bookedSlotIds.includes(slot.time) ? 'opacity-50 cursor-not-allowed' : ''
-                          }`}
-                          onClick={() =>
-                            bookedSlotIds.includes(slot.time) ? null : bookSession(mentor.id, slot.time)
-                          }
-                          disabled={bookedSlotIds.includes(slot.time)}
-                        >
-                          {slot.time}
-                        </button>
-                      ))}
+      {/* Check if mentorSlots is empty */}
+      {!mentorSlots || mentorSlots.length === 0 ? (
+        <p className="text-gray-500">No available mentors at the moment.</p>
+      ) : (
+        daysOfWeek.map((day) => (
+          <div key={day} className="mb-4">
+            <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
+            {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.day === day)) ? (
+              mentorSlots
+                .filter((mentor) => mentor.slots.some((slot) => slot.day === day))
+                .map((mentor) => (
+                  <div
+                    key={mentor.id}
+                    className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all"
+                  >
+                    <p className="font-medium text-gray-800">{mentor.name}</p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {mentor.slots
+                        .filter((slot) => slot.day === day)
+                        .map((slot) => (
+                          <button
+                            key={`${mentor.id}-${slot.time}`}
+                            className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all ${
+                              bookedSlotIds.includes(slot.time) ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            onClick={() =>
+                              bookedSlotIds.includes(slot.time) ? null : bookSession(mentor.id, slot.time)
+                            }
+                            disabled={bookedSlotIds.includes(slot.time)}
+                          >
+                            {slot.time}
+                          </button>
+                        ))}
+                    </div>
                   </div>
-                </div>
-              ))
-          ) : (
-            <p className="text-gray-400">No available mentors for {day}.</p>
-          )}
-        </div>
-      ))}
+                ))
+            ) : (
+              <p className="text-gray-400">No available mentors for {day}.</p>
+            )}
+          </div>
+        ))
+      )}
     </div>
   
 
