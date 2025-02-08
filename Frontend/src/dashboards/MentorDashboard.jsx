@@ -294,7 +294,7 @@ const MentorDashboard = () => {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {daysOfWeek.map((day) => (
-            <div key={day} className="p-3 border rounded-md transition duration-300 hover:shadow-2xl border border-gray-200">
+            <div key={day} className="p-3  rounded-md transition duration-300 hover:shadow-2xl border border-gray-200">
               <h4 className="font-medium">{day}</h4>
               <div className="flex flex-wrap gap-2 mt-3">
                 {timeSlots.map((time) => (
