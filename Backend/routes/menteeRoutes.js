@@ -4,6 +4,31 @@ const MentorSlot = require("../models/MentorSlot");
 const mongoose = require("mongoose");
 const router = express.Router();
 
+
+router.get("/details", async (req, res) => {
+  const { menteeId } = req.query;
+  if (!menteeId) {
+    return res.status(400).json({ error: "Mentee ID is required" });
+  }
+  try {
+    // Find the mentee by their UID (adjust the field name if needed)
+    const mentee = await User.findOne({ uid: menteeId });
+    if (!mentee) {
+      return res.status(404).json({ error: "Mentee not found" });
+    }
+    res.json({
+      name: mentee.name,
+      surname: mentee.surname,
+      email: mentee.email,
+      // Add any additional details you want to return
+    });
+  } catch (error) {
+    console.error("Error fetching mentee details:", error);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
+});
+
+
 // ✅ Mentee Books a Slot
 router.post("/book-slot", authMiddleware, async (req, res) => {
   if (req.user.role !== "mentee") {
