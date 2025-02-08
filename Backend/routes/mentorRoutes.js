@@ -107,7 +107,7 @@ router.delete("/delete-slot", authMiddleware, async (req, res) => {
     const { day } = req.query;
   
     try {
-      const slot = await MentorSlot.findOneAndDelete({ mentorId: req.user._id, date: day });
+      const slot = await MentorSlot.findOneAndDelete({ mentorId: req.user._id, date: day});
   
       if (!slot) {
         return res.status(404).json({ error: "No slot found for this day" });
