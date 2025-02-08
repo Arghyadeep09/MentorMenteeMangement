@@ -1,392 +1,42 @@
-// import React, { useEffect, useState } from "react";
-// import Calendar from "react-calendar";
-// import "react-calendar/dist/Calendar.css";
-// import axios from "axios";
-// import { UserAuth } from "../context/AuthContext";
-// import { useNavigate } from "react-router-dom";
-
-// const MenteeDashboard = () => {
-//   const { user, googleSignIn, logout } = UserAuth();
-//   const [mentorSlots, setMentorSlots] = useState([]);
-//   const [bookings, setBookings] = useState([]);
-//   const [selectedDate, setSelectedDate] = useState(new Date());
-//   const [availableSlots, setAvailableSlots] = useState([]);
-
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     fetchMentorSlots();
-//     fetchBookings();
-//   }, []);
-
-//   useEffect(() => {
-//     if (!user) {
-//       setTimeout(() => {
-//         navigate("/login");
-//       }, 1000);
-//     }
-//   }, [user, navigate]);
-
-//   const handleLogout = async () => {
-//     await logout();
-//   };
-
-//   const fetchMentorSlots = async (selectedDate) => {
-//     try {
-//       // Convert selected date to weekday (e.g., "Monday", "Tuesday")
-//       const dayOfWeek = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
-
-//       // Fetch available slots for this weekday
-//       const response = await axios.get(`https://localhost:5000///api/mentors/available-slots?date=${dayOfWeek}`);
-
-//       console.log("Mentor Slots:", response.data);
-//       setMentorSlots(response.data);
-//     } catch (error) {
-//       console.error("Error fetching mentor slots:", error);
-//     }
-//   };
-
-//   // Fetch booking history
-//   const fetchBookings = async () => {
-//     try {
-//       const response = await axios.get("https://localhost:5000///api/bookings");
-//       setBookings(response.data);
-//     } catch (error) {
-//       console.error("Error fetching bookings:", error);
-//     }
-//   };
-
-//   const handleDateChange = (date) => {
-//     setSelectedDate(date);
-
-//     // Convert selected date to weekday (e.g., "Monday")
-//     const dayOfWeek = date.toLocaleDateString("en-US", { weekday: "long" });
-
-//     // Filter slots based on the selected weekday
-//     const filteredSlots = mentorSlots.filter((slot) => slot.date === dayOfWeek);
-
-//     setAvailableSlots(filteredSlots);
-//   };
-
-//   // Book a mentor session
-//   const bookSession = async (mentorId, slotTime) => {
-//     try {
-//       await axios.post("https://localhost:5000///book-slot", {
-//         mentorId,
-//         slot: slotTime,
-//       });
-//       alert("Session booked successfully!");
-//       fetchBookings(); // Refresh booking history
-//     } catch (error) {
-//       console.error("Error booking session:", error);
-//     }
-//   };
-
-//   return (
-//     <>
-//       <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 flex flex-col items-center py-10">
-//         {/* Navbar */}
-//         <div className="navbar bg-white bg-opacity-20 backdrop-blur-md shadow-lg w-full max-w-5xl h-16 flex items-center px-8 text-white justify-between rounded-lg">
-//           <h1 className="text-2xl font-bold">Mentor Mentee Portal</h1>
-//           {user ? (
-//             <div className="flex items-center space-x-4">
-//               <img
-//                 src={user.profilePic}
-//                 alt="User Profile"
-//                 className="w-10 h-10 rounded-full border-2 border-white"
-//               />
-//               <span className="text-lg">{user.name}</span>
-//               <button
-//                 onClick={handleLogout}
-//                 className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg shadow-lg transition-all duration-300"
-//               >
-//                 Logout
-//               </button>
-//             </div>
-//           ) : (
-//             <button
-//               onClick={googleSignIn}
-//               className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg shadow-lg transition-all duration-300"
-//             >
-//               Sign In
-//             </button>
-//           )}
-//         </div>
-
-//         {/* Dashboard Sections */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 w-full max-w-5xl">
-//           {/* Calendar Section */}
-//           <div className="p-6 bg-gray-100 bg-opacity-20 backdrop-blur-md shadow-md rounded-xl flex items-center flex-col ">
-//             <h3 className="text-2xl font-bold  text-gray-700 p-2 mb-3">
-//               Select a Date
-//             </h3>
-//             <Calendar
-//               onChange={handleDateChange}
-//               value={selectedDate}
-//               className="bg-gray-100 bg-opacity-30  rounded-lg p-4 shadow-md mb-4"
-//             />
-//           </div>
-
-//           {/* Available Slots */}
-//           <div className="p-6 bg-gray-100 flex flex-col items-center bg-opacity-20 backdrop-blur-md shadow-md rounded-xl ">
-//             <h3 className="text-2xl font-bold text-gray-700 mb-3">
-//               Available Slots on : <span className="text-blue-500 font-semibold text-xl font-mono">
-//               {selectedDate.toDateString()}
-//               </span>
-//             </h3>
-//             {mentorSlots.length > 0 ? (
-//               <ul className="space-y-3">
-//                 {mentorSlots.map((slot) => (
-//                   <li
-//                     key={slot._id}
-//                     className="flex justify-between items-center bg-white p-3 rounded-lg shadow-md"
-//                   >
-//                     <span className="font-medium">
-//                       {slot.mentorName} - {slot.time}
-//                     </span>
-//                     <button
-//                       onClick={() => bookSession(slot.mentorId, slot.time)}
-//                       className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg"
-//                     >
-//                       Book
-//                     </button>
-//                   </li>
-//                 ))}
-//               </ul>
-//             ) : (
-//               <p className="text-gray-200">No slots available for this date.</p>
-//             )}
-//           </div>
-//         </div>
-
-//         {/* Booking History */}
-//         <div className="p-6 bg-white bg-opacity-20 backdrop-blur-md shadow-md rounded-xl mt-10 w-full max-w-5xl">
-//           <h3 className="text-lg font-semibold text-white mb-3">
-//             Booking History
-//           </h3>
-//           <ul className="space-y-2">
-//             {bookings.map((booking) => (
-//               <li
-//                 key={booking.id}
-//                 className="bg-white p-3 rounded-lg shadow-md"
-//               >
-//                 {booking.mentorName} - {booking.slot}
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default MenteeDashboard;
-
-//----------------------------------------------------------------//
-
-// import React, { useEffect, useState } from "react";
-// import Calendar from "react-calendar";
-// import "react-calendar/dist/Calendar.css";
-// import axios from "axios";
-// import { UserAuth } from "../context/AuthContext";
-// import { useNavigate } from "react-router-dom";
-
-// const MenteeDashboard = () => {
-//   const { user, googleSignIn, logout } = UserAuth();
-//   const [mentorSlots, setMentorSlots] = useState([]);
-//   const [bookings, setBookings] = useState([]);
-//   const [selectedDate, setSelectedDate] = useState(new Date());
-//   const [availableSlots, setAvailableSlots] = useState([]);
-
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     fetchBookings();
-//   }, []);
-
-//   useEffect(() => {
-//     if (!user) {
-//       setTimeout(() => {
-//         navigate("/login");
-//       }, 1000);
-//     }
-//   }, [user, navigate]);
-
-//   const handleLogout = async () => {
-//     await logout();
-//   };
-
-//   const fetchBookings = async () => {
-//     try {
-//       const response = await axios.get("https://localhost:5000///api/bookings");
-//       setBookings(response.data);
-//     } catch (error) {
-//       console.error("Error fetching bookings:", error);
-//     }
-//   };
-
-//   const fetchMentorSlots = async (selectedDate) => {
-//     try {
-//       // Convert selected date to weekday (e.g., "Monday", "Tuesday")
-//       const dayOfWeek = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
-
-//       console.log(`Fetching available slots for: ${dayOfWeek}`);
-//       // Fetch available slots for this weekday
-//       const response = await axios.get(`https://localhost:5000///api/mentor/available-slots?date=${dayOfWeek}`);
-//       console.log("Mentor Slots:", response.data);
-//       setMentorSlots(response.data);
-//     } catch (error) {
-//       console.error("Error fetching mentor slots:", error);
-//     }
-//   };
-
-//   const handleDateChange = (date) => {
-//     setSelectedDate(date);
-//     fetchMentorSlots(date);
-//   };
-
-//   // Book a mentor session
-//   const bookSession = async (mentorId, slotTime) => {
-//     try {
-//       await axios.post("https://localhost:5000///book-slot", {
-//         mentorId,
-//         slot: slotTime,
-//       });
-//       alert("Session booked successfully!");
-//       fetchBookings(); // Refresh booking history
-//     } catch (error) {
-//       console.error("Error booking session:", error);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600 flex flex-col items-center py-10">
-//       {/* Navbar */}
-//       <div className="navbar bg-white bg-opacity-20 backdrop-blur-md shadow-lg w-full max-w-5xl h-16 flex items-center px-8 text-white justify-between rounded-lg">
-//         <h1 className="text-2xl font-bold">Mentor Mentee Portal</h1>
-//         {user ? (
-//           <div className="flex items-center space-x-4">
-//             <img
-//               src={user.profilePic}
-//               alt="User Profile"
-//               className="w-10 h-10 rounded-full border-2 border-white"
-//             />
-//             <span className="text-lg">{user.name}</span>
-//             <button
-//               onClick={handleLogout}
-//               className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg shadow-lg transition-all duration-300"
-//             >
-//               Logout
-//             </button>
-//           </div>
-//         ) : (
-//           <button
-//             onClick={googleSignIn}
-//             className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg shadow-lg transition-all duration-300"
-//           >
-//             Sign In
-//           </button>
-//         )}
-//       </div>
-
-//       {/* Dashboard Sections */}
-//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 w-full max-w-5xl">
-//         {/* Calendar Section */}
-//         <div className="p-6 bg-gray-100 bg-opacity-20 backdrop-blur-md shadow-md rounded-xl flex items-center flex-col ">
-//           <h3 className="text-2xl font-bold text-gray-700 p-2 mb-3">
-//             Select a Date
-//           </h3>
-//           <Calendar
-//             onChange={handleDateChange}
-//             value={selectedDate}
-//             className="bg-gray-100 bg-opacity-30  rounded-lg p-4 shadow-md mb-4"
-//           />
-//         </div>
-
-//         {/* Available Slots */}
-//         <div className="p-6 bg-gray-100 flex flex-col items-center bg-opacity-20 backdrop-blur-md shadow-md rounded-xl ">
-//           <h3 className="text-2xl font-bold text-gray-700 mb-3">
-//             Available Slots on : <span className="text-blue-500 font-semibold text-xl font-mono">
-//             {selectedDate.toDateString()}
-//             </span>
-//           </h3>
-//           {mentorSlots.length > 0 ? (
-//             <ul className="space-y-3">
-//               {mentorSlots.map((slot) => (
-//                 <li
-//                   key={slot._id}
-//                   className="flex justify-between items-center bg-white p-3 rounded-lg shadow-md"
-//                 >
-//                   <span className="font-medium">
-//                     {/* Check if mentorId exists and has name */}
-//                     {slot.mentorId && slot.mentorId.name
-//                       ? slot.mentorId.name
-//                       : "Mentor information unavailable"}
-//                     - {slot.startTime} to {slot.endTime}
-//                   </span>
-//                   <button
-//                     onClick={() => bookSession(slot.mentorId._id, `${slot.startTime} - ${slot.endTime}`)}
-//                     className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg"
-//                   >
-//                     Book
-//                   </button>
-//                 </li>
-//               ))}
-//             </ul>
-//           ) : (
-//             <p className="text-gray-200">No slots available for this date.</p>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Booking History */}
-//       <div className="p-6 bg-white bg-opacity-20 backdrop-blur-md shadow-md rounded-xl mt-10 w-full max-w-5xl">
-//         <h3 className="text-lg font-semibold text-white mb-3">
-//           Booking History
-//         </h3>
-//         <ul className="space-y-2">
-//           {bookings.map((booking) => (
-//             <li
-//               key={booking._id}
-//               className="bg-white p-3 rounded-lg shadow-md"
-//             >
-//               {booking.mentorName} - {booking.slot}
-//             </li>
-//           ))}
-//         </ul>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default MenteeDashboard;
-
 import React, { useEffect, useState } from "react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import { UserAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, CalendarDays, CalendarClock, User, Clock, LogOut } from "lucide-react";
+import {
+  UserCircle,
+  CalendarDays,
+  CalendarClock,
+  User,
+  Clock,
+  LogOut,
+} from "lucide-react";
 
 const MenteeDashboard = () => {
-  const { user, googleSignIn, logout } = UserAuth(); 
-  
-  const [mentorSlots, setMentorSlots] = useState([]);
+  const { user, googleSignIn, logout } = UserAuth();
+
+  // State to hold bookings, booked slot IDs, and available sessions
   const [bookings, setBookings] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [availableSlots, setAvailableSlots] = useState([]);
-  const [isBooked, setIsBooked] = useState(false); // Track booking status
-  const [bookingDetails, setBookingDetails] = useState(null); // Store booking details
-  const [bookedSlotIds, setBookedSlotIds] = useState([]); // Track booked slot IDs
+  const [bookedSlotIds, setBookedSlotIds] = useState([]);
+  const [availableSessions, setAvailableSessions] = useState({}); // e.g., { Monday: [mentorObj, …], Tuesday: [...] }
+
+  const [isBooked, setIsBooked] = useState(false);
+  const [bookingDetails, setBookingDetails] = useState(null);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
+  // Define days of week to display sessions in order.
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
+  // Redirect to login if no user is available
   useEffect(() => {
     if (!user) {
       setTimeout(() => {
@@ -395,127 +45,147 @@ const MenteeDashboard = () => {
     }
   }, [user, navigate]);
 
-  const handleLogout = async () => {
-    await logout();
-  };
+  // Fetch bookings on mount
+  useEffect(() => {
+    fetchBookings();
+  }, []);
 
+  // Fetch bookings for the mentee (update bookedSlotIds based on returned bookings)
   const fetchBookings = async () => {
     try {
-      const token = localStorage.getItem("token"); // Ensure token is used
+      const token = localStorage.getItem("token");
       if (!token) {
         alert("You need to log in first!");
         return;
       }
-
       const response = await axios.get(
         "https://mentormenteemangement.onrender.com/api/mentee/bookings",
         {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add JWT token for authentication
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       setBookings(response.data);
       console.log("Bookings:", response.data);
 
-      // Track booked slot IDs
-      const bookedSlots = response.data.map((booking) => booking._id); // Use _id instead of slotId
+      // Assuming that each booking’s _id corresponds to the slot that was booked.
+      const bookedSlots = response.data.map((booking) => booking._id);
       setBookedSlotIds(bookedSlots);
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
   };
 
-  // 
-  
-
-  // new
+  // Fetch available sessions for all days and group them by mentor
   useEffect(() => {
-    const fetchAllMentorSlots = async () => {
+    const fetchAvailableSessions = async () => {
       try {
-        console.log("Fetching all available slots for all mentors");
-        const response = await axios.get(
-          `https://mentormenteemangement.onrender.com/api/mentor/available-slots`
+        let allSlots = [];
+        // Create an array of promises—one for each day
+        const requests = daysOfWeek.map((day) =>
+          axios
+            .get(
+              `https://mentormenteemangement.onrender.com/api/mentor/available-slots?date=${day}`
+            )
+            .then((response) => {
+              // Make sure each slot object has the day (from the query parameter)
+              return response.data.map((slot) => ({ ...slot, date: day }));
+            })
+            .catch((err) => {
+              console.error(`Error fetching slots for ${day}:`, err);
+              return [];
+            })
         );
-        // Assuming the response contains a list of mentors with their available slots
+        const results = await Promise.all(requests);
+        results.forEach((daySlots) => {
+          allSlots.push(...daySlots);
+        });
 
-        console.log("Mentor Slots:", response.data);  
-        setMentorSlots(response.data);
+        // Group slots by day and then by mentor.
+        const grouped = {};
+        allSlots.forEach((slot) => {
+          const day = slot.date;
+          if (!grouped[day]) grouped[day] = {};
+          // Use the mentor's unique id (ensure your populate returns an _id or id)
+          const mentorId = slot.mentorId?._id || slot.mentorId?.id;
+          if (!mentorId) return; // Skip if mentor info is missing
+
+          if (!grouped[day][mentorId]) {
+            grouped[day][mentorId] = {
+              id: mentorId,
+              name: slot.mentorId.name,
+              prefix: slot.mentorId.prefix,
+              slots: [],
+            };
+          }
+          // Combine startTime and endTime into a time string.
+          grouped[day][mentorId].slots.push({
+            time: `${slot.startTime} - ${slot.endTime}`,
+            slotId: slot._id,
+          });
+        });
+
+        // Transform grouped data so that availableSessions[day] is an array of mentor objects.
+        const sessionsByDay = {};
+        daysOfWeek.forEach((day) => {
+          sessionsByDay[day] = grouped[day] ? Object.values(grouped[day]) : [];
+        });
+        setAvailableSessions(sessionsByDay);
       } catch (error) {
-        console.error("Error fetching mentor slots:", error);
+        console.error("Error fetching available sessions:", error);
       }
     };
-    fetchAllMentorSlots();
-  }, []); 
 
+    fetchAvailableSessions();
+  }, [daysOfWeek]);
 
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    fetchMentorSlots(date);
-  };
-
-  // Book a mentor session
-  const bookSession = async (mentorId, slotTime, selectedDate, slotId) => {
-    // const date = selectedDate.toISOString().split("T")[0]; // Format: "YYYY-MM-DD"
-
+  // Function to book a mentor session
+  const bookSession = async (mentorId, slotTime, slotId) => {
     try {
-      const token = localStorage.getItem("token"); // Get token from local storage
-
-      console.log("Booking Session:", { mentorId, slotTime });
-      //console.log("token:", token);
+      const token = localStorage.getItem("token");
       if (!token) {
         alert("You need to log in first!");
         navigate("/login");
         return;
       }
-
+      console.log("Booking Session:", { mentorId, slotTime });
       const response = await axios.post(
         "https://mentormenteemangement.onrender.com/api/mentee/book-slot",
-        {
-          mentorId,
-          slot: slotTime, // Example format: "4:00 PM - 5:00 PM"
-        },
+        { mentorId, slot: slotTime },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Add JWT token
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
       );
-
       console.log("Booking Response:", response.data);
 
+      // Optionally update booking details (if returned by the API)
       setBookingDetails({
-        startTime: response.data.startTime, // Assuming the response has startTime
-        endTime: response.data.endTime, // Assuming the response has endTime
-        menteeName: response.data.menteeName, // Assuming the response has menteeName
+        startTime: response.data.startTime,
+        endTime: response.data.endTime,
+        menteeName: response.data.menteeName,
       });
       setIsBooked(true);
-      setBookedSlotIds((prevIds) => [...prevIds, slotId]); // Add booked slot ID
+      // Mark this slot as booked by adding its slotId to the bookedSlotIds array.
+      setBookedSlotIds((prevIds) => [...prevIds, slotId]);
       await fetchBookings();
       alert("Session booked successfully!");
     } catch (error) {
       console.error("Error booking session:", error);
-      alert("Failed to book session. Please login again. ", error);
+      alert("Failed to book session. Please login again.");
     }
   };
 
-  console.log("booking details", bookingDetails);
-  const daysOfWeek = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+  // Handle logout
+  const handleLogout = async () => {
+    await logout();
+  };
+
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6">
       {/* Navbar */}
-        <motion.div
+      <motion.div
         className="flex items-center justify-between bg-white shadow-lg p-4 rounded-2xl"
         whileHover={{ scale: 1.01 }}
       >
@@ -542,171 +212,87 @@ const MenteeDashboard = () => {
         )}
       </motion.div>
 
-      {/* Dashboard Sections */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 w-full max-w-5xl">
-        {/* Calendar Section */}
-        {/* <div className="p-6 bg-gray-100 bg-opacity-20 backdrop-blur-md shadow-md rounded-xl flex items-center flex-col ">
-          <h3 className="text-2xl font-bold text-gray-700 p-2 mb-3">
-            Select a Date
-          </h3>
-          <Calendar
-            onChange={handleDateChange}
-            value={selectedDate}
-            className="bg-gray-100 bg-opacity-30  rounded-lg p-4 shadow-md mb-4"
-          />
-        </div> */}
-
-        {/* Available Slots */}
-        {/* <div className="p-6 bg-gray-100 flex flex-col items-center bg-opacity-20 backdrop-blur-md shadow-md rounded-xl ">
-          <h3 className="text-2xl font-bold text-gray-700 mb-3">
-            Available Slots on :{" "}
-            <span className="text-blue-500 font-semibold text-xl font-mono">
-              {selectedDate.toDateString()}
-            </span>
-          </h3>
-          {mentorSlots.length > 0 ? (
-            <ul className="space-y-3">
-              {mentorSlots.map((slot) => (
-                <li
-                  key={slot._id}
-                  className="flex justify-between items-center bg-white p-3 rounded-lg shadow-md"
-                >
-                  <span className="font-medium">
-                    {slot.mentorId?.name || "Mentor information unavailable"} -{" "}
-                    {slot.startTime} to {slot.endTime}
-                  </span>
-                  <button
-                    onClick={() =>
-                      bookSession(
-                        slot.mentorId._id,
-                        `${slot.startTime} - ${slot.endTime}`,
-                        selectedDate,
-                        slot._id // Pass slotId to track which one was booked
-                      )
-                    }
-                    className={`${
-                      bookedSlotIds.includes(slot._id)
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
-                    } hover:${
-                      bookedSlotIds.includes(slot._id)
-                        ? "bg-yellow-600"
-                        : "bg-green-600"
-                    } text-white px-3 py-1 rounded-lg cursor-pointer`}
-                  >
-                    {bookedSlotIds.includes(slot._id) ? "Booked" : "Book"}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-200">No slots available for this date.</p>
-          )}
-        </div>
-      </div> */} 
-
-      {/* new  */}
-     {/* Available Mentors Section */}
-     <div className="p-6 bg-white rounded-xl shadow-md">
-      <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-        <CalendarDays className="mr-2 text-blue-500" /> Available Mentors
-      </h3>
-
-      {/* Check if mentorSlots is empty */}
-      {!mentorSlots || mentorSlots.length === 0 ? (
-        <p className="text-gray-500">No available mentors at the moment.</p>
-      ) : (
-        daysOfWeek.map((day) => (
+      {/* Available Sessions by Day */}
+      <div className="p-6 bg-white rounded-xl shadow-md">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <CalendarDays className="mr-2 text-blue-500" /> Available Sessions
+        </h3>
+        {daysOfWeek.map((day) => (
           <div key={day} className="mb-4">
             <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
-            {mentorSlots.some((mentor) => mentor.slots.some((slot) => slot.day === day)) ? (
-              mentorSlots
-                .filter((mentor) => mentor.slots.some((slot) => slot.day === day))
-                .map((mentor) => (
-                  <div
-                    key={mentor.id}
-                    className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all"
-                  >
-                    <p className="font-medium text-gray-800">{mentor.name}</p>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {mentor.slots
-                        .filter((slot) => slot.day === day)
-                        .map((slot) => (
-                          <button
-                            key={`${mentor.id}-${slot.time}`}
-                            className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all ${
-                              bookedSlotIds.includes(slot.time) ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                            onClick={() =>
-                              bookedSlotIds.includes(slot.time) ? null : bookSession(mentor.id, slot.time)
-                            }
-                            disabled={bookedSlotIds.includes(slot.time)}
-                          >
-                            {slot.time}
-                          </button>
-                        ))}
-                    </div>
+            {availableSessions[day] && availableSessions[day].length > 0 ? (
+              availableSessions[day].map((mentor) => (
+                <div
+                  key={mentor.id}
+                  className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all mb-2"
+                >
+                  <p className="font-medium text-gray-800">
+                    {mentor.prefix} {mentor.name}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {mentor.slots.map((slot) => (
+                      <button
+                        key={`${mentor.id}-${slot.slotId}`}
+                        className={`bg-blue-500 text-white px-4 py-2 rounded-md transition-all ${
+                          bookedSlotIds.includes(slot.slotId)
+                            ? "bg-yellow-500 opacity-50 cursor-not-allowed"
+                            : "hover:bg-blue-600"
+                        }`}
+                        onClick={() =>
+                          bookedSlotIds.includes(slot.slotId)
+                            ? null
+                            : bookSession(mentor.id, slot.time, slot.slotId)
+                        }
+                        disabled={bookedSlotIds.includes(slot.slotId)}
+                      >
+                        {bookedSlotIds.includes(slot.slotId)
+                          ? "Booked"
+                          : slot.time}
+                      </button>
+                    ))}
                   </div>
-                ))
+                </div>
+              ))
             ) : (
-              <p className="text-gray-400">No available mentors for {day}.</p>
+              <p className="text-gray-400">
+                No available sessions for {day}.
+              </p>
             )}
           </div>
-        ))
-      )}
-    </div>
-  
-
-
-      {/* My Booking Section */}
-      {/* {isBooked && bookingDetails && (
-        <div className="p-6 bg-white bg-opacity-20 backdrop-blur-md shadow-md rounded-xl mt-10 w-full max-w-5xl">
-          <h3 className="text-lg font-semibold text-gray-500 mb-3">
-            My Bookings
-          </h3>
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <p>
-              <strong>Start Time:</strong>
-              <span> {bookingDetails.startTime}</span>
-            </p>
-            <p>
-              <strong>End Time:</strong> {bookingDetails.endTime}
-            </p>
-            <p>
-              <strong>Mentee:</strong> {bookingDetails.menteeName}
-            </p>
-          </div>
-        </div>
-      )} */}
+        ))}
+      </div>
 
       {/* Booking History */}
       <div className="p-6 bg-white bg-opacity-20 backdrop-blur-md shadow-md rounded-xl mt-10 w-full max-w-5xl">
         <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-black-500 mb-3 flex items-center">
-            <CalendarClock className="mr-2 text-blue-500" />My  Bookings.
-        </h3>
-        <button
-          onClick={fetchBookings}
-          className="bg-blue-400 hover:bg-blue-600 text-white px-3 py-1 rounded-lg cursor-pointer shadow-md transition-all"
-        >
-          Refresh Bookings
+          <h3 className="text-lg font-semibold text-black mb-3 flex items-center">
+            <CalendarClock className="mr-2 text-blue-500" /> My Bookings
+          </h3>
+          <button
+            onClick={fetchBookings}
+            className="bg-blue-400 hover:bg-blue-600 text-white px-3 py-1 rounded-lg cursor-pointer shadow-md transition-all"
+          >
+            Refresh Bookings
           </button>
-          </div>
+        </div>
         <ul className="space-y-2 mt-2">
           {bookings.length > 0 ? (
-           
             bookings.map((booking) => (
-              <li  
+              <li
                 key={booking._id}
                 className="bg-white p-3 rounded-lg shadow-md border"
-              > 
-                 <h4 className="text-lg font-semibold flex items-center">
-      <User className="mr-2 text-blue-500" /> {bookings.mentorId?.prefix} {bookings.mentorId?.name || "Unknown Mentor"}
-    </h4>
-    <p className="flex items-center mt-2 text-gray-600">
-                  <Clock className="mr-2 text-blue-500" /> {bookings.day}, {bookings.startTime} 
-                  </p>
-              </li> 
+              >
+                <h4 className="text-lg font-semibold flex items-center">
+                  <User className="mr-2 text-blue-500" />{" "}
+                  {booking.mentorId?.prefix}{" "}
+                  {booking.mentorId?.name || "Unknown Mentor"}
+                </h4>
+                <p className="flex items-center mt-2 text-gray-600">
+                  <Clock className="mr-2 text-blue-500" />{" "}
+                  {booking.day || booking.date}, {booking.startTime} -{" "}
+                  {booking.endTime}
+                </p>
+              </li>
             ))
           ) : (
             <p className="text-gray-400">No bookings yet.</p>
