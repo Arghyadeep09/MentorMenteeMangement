@@ -53,8 +53,15 @@ const MenteeDashboard = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
+
+        // Use the correct property. Adjust this if your user object uses a different property.
+        const menteeId = user?.uid || user?.id;
+        if (!menteeId) {
+          console.error("No mentee ID found in user object.");
+          return;
+        }
         const response = await axios.get(
-          `https://mentormenteemangement.onrender.com/api/mentee/details?menteeId=${user.uid}`,
+          `https://mentormenteemangement.onrender.com/api/mentee/details?menteeId=${menteeId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setMenteeDetails(response.data);
