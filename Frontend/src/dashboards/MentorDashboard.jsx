@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { UserCircle, CalendarDays } from "lucide-react";
+import { UserCircle, CalendarDays, CalendarClock, User, Clock } from "lucide-react";
 import axios from "axios";
 import { UserAuth } from "../context/AuthContext";
 import { auth } from "../firebaseConfig";
-import { useNavigate } from "react-router-dom"; // Add this for navigation
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { CalendarClock,User,Clock} from "lucide-react";
 
 const daysOfWeek = [
   "Monday",
@@ -18,6 +17,7 @@ const daysOfWeek = [
   "Saturday",
   "Sunday",
 ];
+
 const timeSlots = [
   "9:00 AM",
   "10:00 AM",
@@ -43,16 +43,19 @@ const MentorDashboard = () => {
   const [editableDetails, setEditableDetails] = useState({ ...mentorDetails });
   const [availability, setAvailability] = useState({});
   
-  const navigate = useNavigate(); // Initialize the useNavigate hook
+  const navigate = useNavigate();
 
+  // Update editable details whenever mentorDetails changes
   useEffect(() => {
     setEditableDetails({ ...mentorDetails });
   }, [mentorDetails]);
 
+  // Fetch the mentor's bookings on component mount
   useEffect(() => {
-      fetchBookings();
-    }, []);
+    fetchBookings();
+  }, []);
 
+  // Fetch mentor details
   useEffect(() => {
     const fetchMentorDetails = async () => {
       if (!user || !user.id) return;
@@ -63,7 +66,7 @@ const MentorDashboard = () => {
           `https://mentormenteemangement.onrender.com/api/mentor/details?mentorId=${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log("Mentor Details:", response.data); // Debugging: check fetched data
+        console.log("Mentor Details:", response.data);
         setMentorDetails(response.data);
       } catch (error) {
         console.error("Error fetching mentor details:", error);
@@ -73,6 +76,7 @@ const MentorDashboard = () => {
     fetchMentorDetails();
   }, [user]);
 
+  // Fetch the mentor's current availability (slots)
   useEffect(() => {
     const fetchAvailability = async () => {
       if (!user || !user.id) return;
@@ -83,13 +87,14 @@ const MentorDashboard = () => {
           `https://mentormenteemangement.onrender.com/api/mentor/slots?mentorId=${user.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log("Fetched Slots: ", response.data); // Debugging: check fetched data
+        console.log("Fetched Slots:", response.data);
+        // Assuming each slot object has a date and startTime.
         const availableSlots = response.data.reduce((acc, slot) => {
           acc[slot.date] = slot.startTime;
           return acc;
         }, {});
         setAvailability(availableSlots);
-        console.log("Availability after fetch:", availableSlots); // Debugging: Check state after fetching
+        console.log("Availability after fetch:", availableSlots);
       } catch (error) {
         console.error("Error fetching availability:", error);
       }
@@ -98,6 +103,7 @@ const MentorDashboard = () => {
     fetchAvailability();
   }, [user]);
 
+  // Fetch bookings for the mentor
   const fetchBookings = async () => {
     try {
       const token = await auth.currentUser.getIdToken();
@@ -110,58 +116,52 @@ const MentorDashboard = () => {
         }
       );
   
-      console.log("Fetched Bookings:", response.data); // Debugging 
+      console.log("Fetched Bookings:", response.data);
       setBookings(response.data);
     } catch (error) {
       console.error("Error fetching bookings:", error);
-       toast.error("Failed to fetch bookings. Please try again later.");
+      toast.error("Failed to fetch bookings. Please try again later.");
     }
   };
-  
 
+  // Toggle availability for a given day and time slot
   const toggleAvailability = async (day, time) => {
-    console.log("User:", user); // Debugging: Check user object
     if (!user || !user.id) return;
-
-    console.log("Clicked:", day, time); // Debugging: Check clicked day and time
 
     try {
       const token = await auth.currentUser.getIdToken();
-      console.log("Token for Setting Slot: ", token); // Check token before API call
       const updatedAvailability = { ...availability };
 
+      // If there is already a slot set for that day, delete it first
       if (updatedAvailability[day]) {
-        console.log("Deleting Slot for: ", day, updatedAvailability[day]); // Debugging: Check what is being deleted
         await axios.delete(
           `https://mentormenteemangement.onrender.com/api/mentor/delete-slot?mentorId=${user.id}&day=${day}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        delete updatedAvailability[day]; // Remove previous slot
+        delete updatedAvailability[day];
       }
 
-      console.log("Setting Slot for: ", day, time); // Debugging: Check new slot
+      // Set the new slot
       updatedAvailability[day] = time;
-      console.log("Updated Availability:", updatedAvailability); // Debugging: Check updated state
-
       await axios.post(
         "https://mentormenteemangement.onrender.com/api/mentor/create-slot",
         { mentorId: user.id, day, time },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, 
             "Content-Type": "application/json",
           },
         }
       );
-      console.log("Slot created successfully"); // Debugging: Confirm slot creation
-        toast.success("Availability updated successfully!");
-      setAvailability(updatedAvailability); // Update the state with the new availability
+      toast.success("Availability updated successfully!");
+      setAvailability(updatedAvailability);
     } catch (error) {
-      console.error("Error updating availability:", error); // Debugging: Check error message 
-       toast.error("Failed to update availability. Please try again.");
+      console.error("Error updating availability:", error);
+      toast.error("Failed to update availability. Please try again.");
     }
   };
 
+  // Update the mentor's profile details
   const updateMentorDetails = async () => {
     try {
       const token = await auth.currentUser.getIdToken();
@@ -176,11 +176,11 @@ const MentorDashboard = () => {
         }
       );
       console.log("Updated Mentor Details:", response.data);
-         toast.success("Profile updated successfully!");
-      setMentorDetails(editableDetails); // Update the mentor details in the state
-      setIsEditMode(false); // Exit edit mode
+      toast.success("Profile updated successfully!");
+      setMentorDetails(editableDetails);
+      setIsEditMode(false);
     } catch (error) {
-        toast.error("Failed to update profile. Please try again later.");
+      toast.error("Failed to update profile. Please try again later.");
       console.error("Error updating mentor details:", error);
     }
   };
@@ -188,12 +188,12 @@ const MentorDashboard = () => {
   // Logout function
   const handleLogout = async () => {
     try {
-      await auth.signOut(); // Sign out the user from Firebase
-       localStorage.clear();
-      navigate("/login"); // Navigate to the login page after logout
+      await auth.signOut();
+      localStorage.clear();
+      navigate("/login");
     } catch (error) {
-      console.error("Error logging out:", error); // Handle any errors during logout 
-        toast.error("Logout failed");
+      console.error("Error logging out:", error);
+      toast.error("Logout failed");
     }
   };
 
@@ -216,14 +216,14 @@ const MentorDashboard = () => {
         </div>
         <div className="flex space-x-4">
           <button
-            className="text-blue-700 text-bold cursor-pointer bg-blue-100 py-2 px-4 rounded-lg hover:bg-blue-200 transform hover:scale-110 transition-transform duration-300"
+            className="text-blue-700 font-bold cursor-pointer bg-blue-100 py-2 px-4 rounded-lg hover:bg-blue-200 transform hover:scale-110 transition-transform duration-300"
             onClick={() => setIsEditMode(!isEditMode)}
           >
             {isEditMode ? "Cancel" : "Edit Profile"}
           </button>
           <button
-            className="text-red-700 text-bold cursor-pointer bg-red-100 py-2 px-4 rounded-lg hover:bg-red-200 transform hover:scale-110 transition-transform duration-300"
-            onClick={handleLogout} // Logout on button click
+            className="text-red-700 font-bold cursor-pointer bg-red-100 py-2 px-4 rounded-lg hover:bg-red-200 transform hover:scale-110 transition-transform duration-300"
+            onClick={handleLogout}
           >
             Logout
           </button>
@@ -238,7 +238,7 @@ const MentorDashboard = () => {
           transition={{ duration: 0.1 }}
           className="bg-white shadow-lg p-4 rounded-2xl"
         >
-          <h3 className="text-lg cursor-pointer font-bold mb-3">Edit Profile</h3>
+          <h3 className="text-lg font-bold mb-3 cursor-pointer">Edit Profile</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
@@ -252,28 +252,28 @@ const MentorDashboard = () => {
               placeholder="First Name"
               value={editableDetails.name}
               onChange={(e) => setEditableDetails({ ...editableDetails, name: e.target.value })}
-              className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
             />
             <input
               type="text"
               placeholder="Surname"
               value={editableDetails.surname}
               onChange={(e) => setEditableDetails({ ...editableDetails, surname: e.target.value })}
-              className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
             />
             <input
               type="text"
               placeholder="Expertise"
               value={editableDetails.expertise}
               onChange={(e) => setEditableDetails({ ...editableDetails, expertise: e.target.value })}
-              className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
             />
             <input
               type="number"
               placeholder="Experience (years)"
               value={editableDetails.experience}
               onChange={(e) => setEditableDetails({ ...editableDetails, experience: e.target.value })}
-              className="w-full px-4 py-2 border cursor-pointer border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
             />
           </div>
           <div className="flex justify-end mt-4">
@@ -289,12 +289,12 @@ const MentorDashboard = () => {
 
       {/* Availability Section */}
       <div className="p-4">
-        <h3 className="text-lg font-semibold mb-3  flex items-center">
+        <h3 className="text-lg font-semibold mb-3 flex items-center">
           <CalendarDays className="mr-2 text-blue-500" /> Select Your Available Slots
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {daysOfWeek.map((day) => (
-            <div key={day} className="p-3  rounded-md transition duration-300 hover:shadow-2xl border border-gray-200">
+            <div key={day} className="p-3 rounded-md transition duration-300 hover:shadow-2xl border border-gray-200">
               <h4 className="font-medium">{day}</h4>
               <div className="flex flex-wrap gap-2 mt-3">
                 {timeSlots.map((time) => (
@@ -318,42 +318,54 @@ const MentorDashboard = () => {
 
       {/* View Bookings Section */}
       <div className="p-6">
-        <h3 className="text-lg font-semibold mb-3  flex items-center">
+        <h3 className="text-lg font-semibold mb-3 flex items-center">
           <CalendarClock className="mr-2 text-blue-500" /> View Bookings
         </h3>
-        {/* Add booking view functionality here */}
         <ul className="space-y-2 mt-2">
           {bookings.length > 0 ? (
             bookings.map((booking) => (
               <li
                 key={booking._id}
-                className="bg-white p-3 rounded-lg shadow-md border border-gray-200 transition duration-300 hover:shadow-1xl"
+                className="bg-white p-3 rounded-lg shadow-md border border-gray-200 transition duration-300 hover:shadow-xl"
               >
-                <h4 className="text-lg font-semibold flex items-center">
-                <User className="mr-2 text-blue-500" /> 
-                {booking.menteeId?.name || "Unknown Mentee"}
-              </h4>
-              <p className="flex items-center mt-2 text-gray-600">
-                <Clock className="mr-2 text-blue-500" /> {booking.startTime} - {booking.endTime}
-              </p>
+                <div className="flex justify-between items-center">
+                  <h4 className="text-lg font-semibold flex items-center">
+                    <User className="mr-2 text-blue-500" />{" "}
+                    {booking.menteeId?.name || "Unknown Mentee"}
+                  </h4>
+                  {booking.bookedAt && (
+                    <p className="text-sm text-gray-500">
+                      {new Date(booking.bookedAt).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+                <p className="mt-2 text-gray-600">
+                  {booking.date && (
+                    <span>
+                      <strong>Date:</strong> {booking.date}
+                      <br />
+                    </span>
+                  )}
+                  <strong>Time:</strong> {booking.startTime} - {booking.endTime}
+                </p>
               </li>
             ))
           ) : (
             <p className="text-gray-400">No bookings found.</p>
           )}
         </ul>
-      </div> 
+      </div>
       <ToastContainer
-  position="top-right"
-  autoClose={5000}
-  hideProgressBar={false}
-  newestOnTop={false}
-  closeOnClick
-  rtl={false}
-  pauseOnFocusLoss
-  draggable
-  pauseOnHover
-/>
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };
