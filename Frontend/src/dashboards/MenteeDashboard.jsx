@@ -15,11 +15,13 @@ import {
 const MenteeDashboard = () => {
   const { user, googleSignIn, logout } = UserAuth();
 
-  // State to hold bookings, booked slot IDs, and available sessions
+  // State for fetching the mentee's details from MongoDB
+  const [menteeDetails, setMenteeDetails] = useState(null);
+  
+  // Other state variables remain the same
   const [bookings, setBookings] = useState([]);
   const [bookedSlotIds, setBookedSlotIds] = useState([]);
-  const [availableSessions, setAvailableSessions] = useState({}); // e.g., { Monday: [mentorObj, …], Tuesday: [...] }
-
+  const [availableSessions, setAvailableSessions] = useState({});
   const [isBooked, setIsBooked] = useState(false);
   const [bookingDetails, setBookingDetails] = useState(null);
 
@@ -45,12 +47,32 @@ const MenteeDashboard = () => {
     }
   }, [user, navigate]);
 
-  // Fetch bookings on mount
+  // Fetch mentee details from MongoDB using the user's UID (stored as uid in MongoDB)
+  useEffect(() => {
+    const fetchMenteeDetails = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const response = await axios.get(
+          `https://mentormenteemangement.onrender.com/api/mentee/details?menteeId=${user.uid}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setMenteeDetails(response.data);
+      } catch (error) {
+        console.error("Error fetching mentee details:", error);
+      }
+    };
+
+    if (user) {
+      fetchMenteeDetails();
+    }
+  }, [user]);
+
+  // Fetch bookings for the mentee (update bookedSlotIds based on returned bookings)
   useEffect(() => {
     fetchBookings();
   }, []);
 
-  // Fetch bookings for the mentee (update bookedSlotIds based on returned bookings)
   const fetchBookings = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -87,7 +109,7 @@ const MenteeDashboard = () => {
               `https://mentormenteemangement.onrender.com/api/mentor/available-slots?date=${day}`
             )
             .then((response) => {
-              // Make sure each slot object has the day (from the query parameter)
+              // Ensure each slot object has the day (from the query parameter)
               return response.data.map((slot) => ({ ...slot, date: day }));
             })
             .catch((err) => {
@@ -184,17 +206,24 @@ const MenteeDashboard = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6">
-      {/* Navbar */}
+      {/* Navbar / Header Section */}
       <motion.div
         className="flex items-center justify-between bg-white shadow-lg p-4 rounded-2xl"
         whileHover={{ scale: 1.01 }}
       >
         <h1 className="text-2xl font-bold text-gray-500">
-          Welcome{user ? `, ${user.name}` : ""}!
+          Welcome
+          {menteeDetails
+            ? `, ${menteeDetails.name}`
+            : user
+            ? `, ${user.name}`
+            : "!"}
         </h1>
         {user ? (
           <div className="flex items-center space-x-4">
-            <span className="text-lg">{user.name}</span>
+            <span className="text-lg">
+              {menteeDetails ? menteeDetails.name : user.name}
+            </span>
             <button
               onClick={handleLogout}
               className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg shadow-lg transition-all duration-300"
