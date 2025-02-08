@@ -96,7 +96,25 @@ router.get("/available-slots", async (req, res) => {
   } catch (error) {
       res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
+}); 
+
+router.get("/all-available-slots", async (req, res) => {
+  try {
+    const slots = await MentorSlot.find({ booked: false })
+      .populate("mentorId", "prefix name expertise experience");
+
+    // Return an empty array if no slots are found
+    if (slots.length === 0) {
+      return res.json([]);
+    }
+
+    res.json(slots);
+  } catch (error) {
+    console.error("Error fetching all available slots:", error);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
 });
+
 
   // ✅ Mentor Deletes a Slot
 router.delete("/delete-slot", authMiddleware, async (req, res) => {
