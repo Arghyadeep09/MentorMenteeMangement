@@ -195,17 +195,18 @@ router.get("/slots", authMiddleware, async (req, res) => {
 //fetch mentee bookings
 router.get("/bookings", authMiddleware, async (req, res) => {
   try {
-    // Ensure req.user is defined
+    // Ensure the user is defined and has the "mentor" role
     if (!req.user || req.user.role !== "mentor") {
       return res.status(403).json({ error: "Access Denied" });
     }
 
-    // Convert mentorId to ObjectId (only if necessary)
-    //const mentorId = new mongoose.Types.ObjectId(req.user._id);
+    // Find bookings where mentorId matches and the slot is booked
+    const bookings = await MentorSlot.find({
+      mentorId: req.user._id,
+      booked: true,
+    }).populate("menteeId", "name"); // Populate the mentee's name
 
-    // Find bookings where mentorId matches and slot is booked
-    const bookings = await MentorSlot.find({ mentorId: req.query.mentorId, booked: true })
-  .populate("menteeId", "name"); // Fetch mentee's name from User DB
+    console.log("Fetched Bookings:", bookings);
 
     if (!bookings.length) {
       return res.status(404).json({ message: "No bookings found." });
