@@ -17,8 +17,8 @@ authentication.</p>
 <h3>1. Clone the Repository</h3> 
 <pre> 
 <code> 
-git clone https://github.com/your-username/mentor-mentee-scheduling-app.git 
-cd mentor-mentee-scheduling-app 
+git clone https://github.com/your-username/MentorMenteeMangement.git 
+cd MentorMenteeMangement 
 </code> 
 </pre> 
 <h2>
