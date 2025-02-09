@@ -33,7 +33,7 @@ cd MentorMenteeMangement
 <code>npm install</code> 
 </pre> 
 <h3>Step 3: Configure Environment Variables</h3> 
-<p>Create a <code>.env</code> file in the <code>backend</code> directory and add:</p> 
+<p>Create a <code>.env</code> file in the <code>Backend</code> directory and add:</p> 
 <pre> 
 <code> 
 PORT=5000 
