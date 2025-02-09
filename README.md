@@ -51,7 +51,7 @@ FIREBASE_ADMIN_SDK_JSON=path_to_your_firebase_admin_sdk_json_file
  Frontend Setup</h2> 
 <h3>Step 1: Navigate to the Frontend Folder</h3> 
 <pre> 
-<code>cd ../frontend</code> 
+<code>cd ../Frontend</code> 
 </pre> 
 <h3>Step 2: Install Dependencies</h3> 
 <pre> 
