@@ -58,7 +58,7 @@ FIREBASE_ADMIN_SDK_JSON=path_to_your_firebase_admin_sdk_json_file
 <code>npm install</code> 
 </pre> 
 <h3>Step 3: Configure Environment Variables</h3> 
-<p>Create a <code>.env</code> file in the <code>frontend</code> directory and add:</p> 
+<p>Create a <code>.env</code> file in the <code>Frontend</code> directory and add:</p> 
 <pre> 
 <code> 
 REACT_APP_FIREBASE_API_KEY=your_firebase_api_key 
@@ -74,12 +74,12 @@ REACT_APP_FIREBASE_APP_ID=your_firebase_app_id
 <pre> 
 <code>npm start</code> 
 </pre> 
-<p>The frontend will run on <strong>http://localhost:3000</strong></p> 
+<p>The frontend will run on <strong>https://mentormenteemangement-1.onrender.com</strong></p> 
 <h2>
  🔗
  Access the Application</h2> 
 <p>Open your browser and go to <strong><a 
-href="http://localhost:3000">http://localhost:3000</a></strong></p> 
+href="https://mentormenteemangement-1.onrender.com">https://mentormenteemangement-1.onrender.com</a></strong></p> 
 <ul> 
 <li>Sign up or log in using Firebase Authentication.</li> 
 <li>Use the dashboard to manage mentor slots and bookings.</li> 
