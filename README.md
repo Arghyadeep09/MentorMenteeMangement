@@ -26,7 +26,7 @@ cd mentor-mentee-scheduling-app
  Backend Setup</h2> 
 <h3>Step 1: Navigate to the Backend Folder</h3> 
 <pre> 
-<code>cd backend</code> 
+<code>cd Backend</code> 
 </pre> 
 <h3>Step 2: Install Dependencies</h3> 
 <pre> 
