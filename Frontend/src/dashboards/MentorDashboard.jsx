@@ -45,6 +45,15 @@ const MentorDashboard = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Redirect to login if no user is available
+  useEffect(() => {
+    if (!user) {
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    }
+  }, [user, navigate]);
+
 
   // Update editable details whenever mentorDetails changes
   useEffect(() => {
