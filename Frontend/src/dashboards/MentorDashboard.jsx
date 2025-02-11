@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { UserCircle, CalendarDays, CalendarClock, User, Clock } from "lucide-react";
+import { UserCircle, CalendarDays, CalendarClock, User, Clock, Menu, X } from "lucide-react";
 import axios from "axios";
 import { UserAuth } from "../context/AuthContext";
 import { auth } from "../firebaseConfig";
@@ -42,8 +42,18 @@ const MentorDashboard = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editableDetails, setEditableDetails] = useState({ ...mentorDetails });
   const [availability, setAvailability] = useState({});
-  
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Redirect to login if no user is available
+  useEffect(() => {
+    if (!user) {
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    }
+  }, [user, navigate]);
+
 
   // Update editable details whenever mentorDetails changes
   useEffect(() => {
@@ -115,7 +125,7 @@ const MentorDashboard = () => {
           },
         }
       );
-  
+
       console.log("Fetched Bookings:", response.data);
       setBookings(response.data);
     } catch (error) {
@@ -148,7 +158,7 @@ const MentorDashboard = () => {
         { mentorId: user.id, day, time },
         {
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -191,6 +201,7 @@ const MentorDashboard = () => {
       await auth.signOut();
       localStorage.clear();
       navigate("/login");
+      toast.success("Logged out successfully!");
     } catch (error) {
       console.error("Error logging out:", error);
       toast.error("Logout failed");
@@ -207,26 +218,63 @@ const MentorDashboard = () => {
         <div className="flex items-center space-x-4">
           <UserCircle size={52} className="text-blue-600" />
           <div>
-            <h2 className="text-2xl font-bold">
+            <h2 className="text-2xl font-bold text-base sm:text-lg md:text-2xl">
               {mentorDetails.prefix || "Mr."} {mentorDetails.name || "Mentor Name"} {mentorDetails.surname || "Mentor Surname"}
             </h2>
-            <p className="text-gray-500">{mentorDetails.expertise || "Expert in Web Development"}</p>
-            <p className="text-gray-500">Experience: {mentorDetails.experience || "N/A"} years</p>
+            <p className="text-gray-500 text-sm md:text-base">{mentorDetails.expertise || "Expert in Web Development"}</p>
+            <p className="text-gray-500 text-sm md:text-base">Experience: {mentorDetails.experience || "N/A"} years</p>
           </div>
         </div>
-        <div className="flex space-x-4">
-          <button
-            className="text-blue-700 font-bold cursor-pointer bg-blue-100 py-2 px-4 rounded-lg hover:bg-blue-200 transform hover:scale-110 transition-transform duration-300"
-            onClick={() => setIsEditMode(!isEditMode)}
-          >
-            {isEditMode ? "Cancel" : "Edit Profile"}
-          </button>
-          <button
-            className="text-red-700 font-bold cursor-pointer bg-red-100 py-2 px-4 rounded-lg hover:bg-red-200 transform hover:scale-110 transition-transform duration-300"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
+        <div className="relative">
+          {/* Hamburger menu for smaller screens */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 bg-gray-200 rounded-lg focus:outline-none"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+
+          {/* Menu Items - Shown in small screens when menu is open */}
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-2 flex flex-col space-y-2 md:hidden">
+              <button
+                className="text-blue-700 font-bold cursor-pointer bg-blue-100 py-2 px-4 rounded-lg hover:bg-blue-200 transition duration-300"
+                onClick={() => {
+                  setIsEditMode(!isEditMode);
+                  setMenuOpen(false);
+                }}
+              >
+                {isEditMode ? "Cancel" : "Edit Profile"}
+              </button>
+              <button
+                className="text-red-700 font-bold cursor-pointer bg-red-100 py-2 px-4 rounded-lg hover:bg-red-200 transition duration-300"
+                onClick={() => {
+                  handleLogout();
+                  setMenuOpen(false);
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+
+          {/* Normal buttons for larger screens */}
+          <div className="hidden md:flex space-x-4">
+            <button
+              className="text-blue-700 font-bold cursor-pointer bg-blue-100 py-2 px-4 rounded-lg hover:bg-blue-200 transform hover:scale-110 transition-transform duration-300"
+              onClick={() => setIsEditMode(!isEditMode)}
+            >
+              {isEditMode ? "Cancel" : "Edit Profile"}
+            </button>
+            <button
+              className="text-red-700 font-bold cursor-pointer bg-red-100 py-2 px-4 rounded-lg hover:bg-red-200 transform hover:scale-110 transition-transform duration-300"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </motion.div>
 
@@ -240,13 +288,20 @@ const MentorDashboard = () => {
         >
           <h3 className="text-lg font-bold mb-3 cursor-pointer">Edit Profile</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="Prefix"
+            <select
               value={editableDetails.prefix}
               onChange={(e) => setEditableDetails({ ...editableDetails, prefix: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
-            />
+              className="w-full px-4 py-2 bg-white bg-opacity-30 border border-gray-300 rounded-lg text-gray-400 placeholder-gray-600 focus:outline-none cursor-pointer font-semibold"
+            >
+              <option value="" disabled className="text-gray-200">
+                Select Prefix
+              </option>
+              <option value="Mr.">Mr.</option>
+              <option value="Mrs.">Mrs.</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Dr.">Dr.</option>
+              <option value="Prof.">Prof.</option>
+            </select>
             <input
               type="text"
               placeholder="First Name"
@@ -277,10 +332,20 @@ const MentorDashboard = () => {
             />
           </div>
           <div className="flex justify-end mt-4">
-            <button className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2 cursor-pointer" onClick={() => setIsEditMode(false)}>
+            <button
+              className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2 cursor-pointer hover:bg-grey-300 transition-transform duration-300 transform hover:scale-105"
+              onClick={() => setIsEditMode(false)}
+            >
               Cancel
             </button>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer" onClick={updateMentorDetails}>
+            <button
+              className={`px-4 py-2 text-white rounded-md  ${Object.values(editableDetails).some(value => !value.trim())
+                ? "bg-gray-400 cursor-not-allowed "
+                : "bg-blue-500 text-white cursor-pointer hover:bg-blue-600 transition-transform duration-300 transform hover:scale-105"
+                }`}
+              onClick={updateMentorDetails}
+              disabled={Object.values(editableDetails).some(value => !value.trim())}
+            >
               Save Changes
             </button>
           </div>
@@ -317,11 +382,19 @@ const MentorDashboard = () => {
       </div>
 
       {/* View Bookings Section */}
-      <div className="p-6">
+      <div className="p-6bg-white bg-opacity-20 backdrop-blur-md shadow-md rounded-xl mt-10 w-full max-w-5xl">
+        <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold mb-3 flex items-center">
           <CalendarClock className="mr-2 text-blue-500" /> View Bookings
-        </h3>
-        <ul className="space-y-2 mt-2">
+          </h3>
+           <button
+            onClick={fetchBookings}
+            className="bg-blue-400 hover:bg-blue-500 text-white px-3 py-1 rounded-lg cursor-pointer shadow-md transition-all"
+          >
+            Refresh Bookings
+          </button>
+        </div>
+        <ul className="space-y-3 mt-2">
           {bookings.length > 0 ? (
             bookings.map((booking) => (
               <li
@@ -329,12 +402,12 @@ const MentorDashboard = () => {
                 className="bg-white p-3 rounded-lg shadow-md border border-gray-200 transition duration-300 hover:shadow-xl"
               >
                 <div className="flex justify-between items-center">
-                  <h4 className="text-lg font-semibold flex items-center">
+                  <h4 className="text-lg font-semibold flex items-center text-gray-800">
                     <User className="mr-2 text-blue-500" />{" "}
                     {booking.menteeId?.name || "Unknown Mentee"}
                   </h4>
                   {booking.bookedAt && (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 mt-2 sm:mt-0">
                       {new Date(booking.bookedAt).toLocaleString()}
                     </p>
                   )}
@@ -351,10 +424,11 @@ const MentorDashboard = () => {
               </li>
             ))
           ) : (
-            <p className="text-gray-400">No bookings found.</p>
+            <p className="text-gray-400 text-center mt-6">No bookings found.</p>
           )}
         </ul>
-      </div>
+        </div>
+       
       <ToastContainer
         position="top-right"
         autoClose={5000}

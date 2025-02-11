@@ -11,13 +11,14 @@ import {
   Clock,
   LogOut,
 } from "lucide-react";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const MenteeDashboard = () => {
   const { user, googleSignIn, logout } = UserAuth();
 
   // State for fetching the mentee's details from MongoDB
   const [menteeDetails, setMenteeDetails] = useState(null);
-  
+
   // Other state variables remain the same
   const [bookings, setBookings] = useState([]);
   const [bookedSlotIds, setBookedSlotIds] = useState([]);
@@ -101,6 +102,7 @@ const MenteeDashboard = () => {
       setBookedSlotIds(bookedSlots);
     } catch (error) {
       console.error("Error fetching bookings:", error);
+      toast.error("Failed to fetch bookings. Please try again later.");
     }
   };
 
@@ -161,6 +163,7 @@ const MenteeDashboard = () => {
         setAvailableSessions(sessionsByDay);
       } catch (error) {
         console.error("Error fetching available sessions:", error);
+        toast.error("Failed to fetch available sessions. Please try again later.");
       }
     };
 
@@ -172,7 +175,9 @@ const MenteeDashboard = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("You need to log in first!");
+        toast.error("You need to log in first!")
+        // alert("You need to log in first!"); 
+
         navigate("/login");
         return;
       }
@@ -199,16 +204,19 @@ const MenteeDashboard = () => {
       // Mark this slot as booked by adding its slotId to the bookedSlotIds array.
       setBookedSlotIds((prevIds) => [...prevIds, slotId]);
       await fetchBookings();
-      alert("Session booked successfully!");
+      toast.success("Session booked successfully!");
+      //alert("Session booked successfully!");
     } catch (error) {
       console.error("Error booking session:", error);
-      alert("Failed to book session. Please login again.");
+      toast.error("Failed to book session. Please try again later.");
+      //alert("Failed to book session. Please login again.");
     }
   };
 
   // Handle logout
   const handleLogout = async () => {
     await logout();
+
   };
 
   return (
@@ -223,8 +231,8 @@ const MenteeDashboard = () => {
           {menteeDetails
             ? `, ${menteeDetails.name}`
             : user
-            ? `, ${user.name}`
-            : "!"}
+              ? `, ${user.name}`
+              : "!"}
         </h1>
         {user ? (
           <div className="flex items-center space-x-4">
@@ -253,49 +261,55 @@ const MenteeDashboard = () => {
         <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
           <CalendarDays className="mr-2 text-blue-500" /> Available Sessions
         </h3>
-        {daysOfWeek.map((day) => (
-          <div key={day} className="mb-4">
-            <h4 className="text-lg font-bold mb-2 text-gray-700">{day}</h4>
-            {availableSessions[day] && availableSessions[day].length > 0 ? (
-              availableSessions[day].map((mentor) => (
-                <div
-                  key={mentor.id}
-                  className="p-4 border rounded-lg shadow-md bg-gray-50 hover:shadow-lg transition-all mb-2"
-                >
-                  <p className="font-medium text-gray-800">
-                    {mentor.prefix} {mentor.name}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {mentor.slots.map((slot) => (
-                      <button
-                        key={`${mentor.id}-${slot.slotId}`}
-                        className={`bg-blue-500 text-white px-4 py-2 rounded-md transition-all ${
-                          bookedSlotIds.includes(slot.slotId)
+        <div className="flex flex-col gap-6">
+          {daysOfWeek.map((day) => (
+            <div key={day} className="mb-4">
+              <h4 className="text-lg font-bold mb-3 text-gray-700">{day}</h4>
+              {availableSessions[day] && availableSessions[day].length > 0 ? (
+                availableSessions[day].map((mentor) => (
+                  <div
+                    key={mentor.id}
+                    className="p-5  rounded-xl shadow-md bg-gray-50 hover:bg-gray-100 hover:shadow-lg transition-all mb-3"
+                  >
+                    <p className="font-medium text-gray-800">
+                      {mentor.prefix} {mentor.name}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      <strong>Expertise:</strong> {mentor.expertise}
+                    </p>
+                    <div className="flex flex-wrap gap-3 mt-3">
+                      {mentor.slots.map((slot) => (
+                        <button
+                          key={`${mentor.id}-${slot.slotId}`}
+                          className={`bg-blue-500 text-white px-4 py-2 rounded-md transition-all ${bookedSlotIds.includes(slot.slotId)
                             ? "bg-yellow-500 opacity-50 cursor-not-allowed"
-                            : "hover:bg-blue-600"
-                        }`}
-                        onClick={() =>
-                          bookedSlotIds.includes(slot.slotId)
-                            ? null
-                            : bookSession(mentor.id, slot.time, slot.slotId)
-                        }
-                        disabled={bookedSlotIds.includes(slot.slotId)}
-                      >
-                        {bookedSlotIds.includes(slot.slotId)
-                          ? "Booked"
-                          : slot.time}
-                      </button>
-                    ))}
+                            : "hover:bg-blue-600 cursor-pointer"
+                            }`}
+                          onClick={() =>
+                            bookedSlotIds.includes(slot.slotId)
+                              ? null
+                              : bookSession(mentor.id, slot.time, slot.slotId)
+                          }
+                          disabled={bookedSlotIds.includes(slot.slotId)}
+                        >
+                          {bookedSlotIds.includes(slot.slotId)
+                            ? "Booked"
+                            : slot.time}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400">
-                No available sessions for {day}.
-              </p>
-            )}
-          </div>
-        ))}
+                ))
+
+              ) : (
+                <p className="text-gray-400 text-center ">
+                  No available sessions for {day}.
+                </p>
+              )
+              }
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Booking History */}
@@ -306,7 +320,7 @@ const MenteeDashboard = () => {
           </h3>
           <button
             onClick={fetchBookings}
-            className="bg-blue-400 hover:bg-blue-600 text-white px-3 py-1 rounded-lg cursor-pointer shadow-md transition-all"
+            className="bg-blue-400 hover:bg-blue-500 text-white px-3 py-1 rounded-lg cursor-pointer shadow-md transition-all"
           >
             Refresh Bookings
           </button>
@@ -316,14 +330,16 @@ const MenteeDashboard = () => {
             bookings.map((booking) => (
               <li
                 key={booking._id}
-                className="bg-white p-3 rounded-lg shadow-md border"
+                className="bg-white p-3 rounded-lg shadow-md border hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
               >
-                <h4 className="text-lg font-semibold flex items-center">
+                <h4 className="text-lg font-semibold flex items-center text-gray-800">
                   <User className="mr-2 text-blue-500" />{" "}
-                  {booking.mentorId?.prefix}{" "}
-                  {booking.mentorId?.name || "Unknown Mentor"}
+
+                  <span className="font-medium text-blue-600">
+                    {booking.mentorId?.prefix} {booking.mentorId?.name || "Unknown Mentor"}
+                  </span>
                 </h4>
-                <p className="flex items-center mt-2 text-gray-600">
+                <p className="flex items-center mt-3 text-gray-600">
                   <Clock className="mr-2 text-blue-500" />{" "}
                   {booking.day || booking.date}, {booking.startTime} -{" "}
                   {booking.endTime}
@@ -331,10 +347,21 @@ const MenteeDashboard = () => {
               </li>
             ))
           ) : (
-            <p className="text-gray-400">No bookings yet.</p>
+            <p className="text-gray-400 text-center mt-6">No bookings yet.</p>
           )}
         </ul>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };
