@@ -382,11 +382,19 @@ const MentorDashboard = () => {
       </div>
 
       {/* View Bookings Section */}
-      <div className="p-6">
+      <div className="p-6bg-white bg-opacity-20 backdrop-blur-md shadow-md rounded-xl mt-10 w-full max-w-5xl">
+        <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold mb-3 flex items-center">
           <CalendarClock className="mr-2 text-blue-500" /> View Bookings
-        </h3>
-        <ul className="space-y-2 mt-2">
+          </h3>
+           <button
+            onClick={fetchBookings}
+            className="bg-blue-400 hover:bg-blue-500 text-white px-3 py-1 rounded-lg cursor-pointer shadow-md transition-all"
+          >
+            Refresh Bookings
+          </button>
+        </div>
+        <ul className="space-y-3 mt-2">
           {bookings.length > 0 ? (
             bookings.map((booking) => (
               <li
@@ -394,12 +402,12 @@ const MentorDashboard = () => {
                 className="bg-white p-3 rounded-lg shadow-md border border-gray-200 transition duration-300 hover:shadow-xl"
               >
                 <div className="flex justify-between items-center">
-                  <h4 className="text-lg font-semibold flex items-center">
+                  <h4 className="text-lg font-semibold flex items-center text-gray-800">
                     <User className="mr-2 text-blue-500" />{" "}
                     {booking.menteeId?.name || "Unknown Mentee"}
                   </h4>
                   {booking.bookedAt && (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 mt-2 sm:mt-0">
                       {new Date(booking.bookedAt).toLocaleString()}
                     </p>
                   )}
@@ -416,10 +424,11 @@ const MentorDashboard = () => {
               </li>
             ))
           ) : (
-            <p className="text-gray-400">No bookings found.</p>
+            <p className="text-gray-400 text-center mt-6">No bookings found.</p>
           )}
         </ul>
-      </div>
+        </div>
+       
       <ToastContainer
         position="top-right"
         autoClose={5000}
