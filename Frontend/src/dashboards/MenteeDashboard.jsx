@@ -224,11 +224,11 @@ const MenteeDashboard = () => {
       >
         <h1 className="text-2xl font-bold text-gray-500">
           Welcome
-          {menteeDetails
+          {/* {menteeDetails
             ? `, ${menteeDetails.name}`
             : user
             ? `, ${user.name}`
-            : "!"}
+            : "!"} */}
         </h1>
         {user ? (
           <div className="flex items-center space-x-4">
