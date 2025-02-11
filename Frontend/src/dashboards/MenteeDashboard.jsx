@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { UserAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
@@ -30,7 +30,7 @@ const MenteeDashboard = () => {
   const navigate = useNavigate();
 
   // Define days of week to display sessions in order.
-  const daysOfWeek = [
+  const daysOfWeek = useMemo(() => [
     "Monday",
     "Tuesday",
     "Wednesday",
@@ -38,7 +38,7 @@ const MenteeDashboard = () => {
     "Friday",
     "Saturday",
     "Sunday",
-  ];
+  ],[]);
 
   // Redirect to login if no user is available
   useEffect(() => {
